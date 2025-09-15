@@ -1,4 +1,8 @@
-# Mystery Verse Deployment Guide - Railway Only
+# Mystery Verse Deployment Guide
+
+Choose your preferred deployment option:
+- **Option A**: Vercel Frontend + Railway Backend (Recommended)
+- **Option B**: Full Railway Deployment
 
 ## 🚀 Pre-Deployment Checklist
 
@@ -31,6 +35,10 @@
    git branch -M main
    git push -u origin main
    ```
+
+---
+
+## Option A: Vercel Frontend + Railway Backend (Recommended)
 
 ## Step 2: Deploy Backend to Railway
 
@@ -75,7 +83,41 @@
    - Railway auto-deploys on git push
    - Copy your backend URL: `https://mystery-verse-backend-production.up.railway.app`
 
-## Step 3: Deploy Frontend to Railway
+## Step 3: Deploy Frontend to Vercel
+
+1. **Create Vercel Account**
+   - Go to https://vercel.com
+   - Sign up with GitHub
+
+2. **Import Project**
+   - Click "Add New Project"
+   - Import your GitHub repository
+   - Select the `/frontend` directory as root (if monorepo)
+
+3. **Configure Build Settings**
+   - Framework Preset: Vite (auto-detected)
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+   - Install Command: `npm install`
+
+4. **Add Environment Variables**
+   - Go to Settings → Environment Variables
+   - Add:
+     ```
+     VITE_API_URL=https://mystery-verse-backend-production.up.railway.app
+     ```
+   ⚠️ Use your actual Railway backend URL from Step 2
+
+5. **Deploy**
+   - Click "Deploy"
+   - Wait for build to complete (~2 minutes)
+   - Your app is live at `https://your-app.vercel.app`
+
+---
+
+## Option B: Full Railway Deployment
+
+## Step 3: Deploy Frontend to Railway (Alternative)
 
 1. **Create Frontend Service**
    - In the same Railway project, click "+ New"
@@ -137,7 +179,7 @@
    }
    ```
 
-## Step 5: Configure Production Settings
+## Step 4: Configure Production Settings
 
 ### Backend Production Config
 
@@ -145,10 +187,10 @@
    ```javascript
    app.use(cors({
      origin: [
-       'https://mystery-verse-frontend-production.up.railway.app',
-       'https://your-custom-domain.com',
-       'http://localhost:3000', // for development
-       'http://localhost:3002'  // for development
+       'https://your-app.vercel.app',           // Your Vercel frontend URL
+       'https://your-custom-domain.com',        // Your custom domain (if any)
+       'http://localhost:3000',                 // for development
+       'http://localhost:3002'                  // for development
      ],
      credentials: true
    }));
@@ -192,21 +234,36 @@
    }
    ```
 
-## Step 7: Connect Custom Domain (Optional)
+## Step 5: Connect Custom Domain (Optional)
 
-### For Railway Frontend
+### For Vercel Frontend
 
-1. **In Railway Dashboard**
-   - Go to your frontend service → Settings → Domains
-   - Click "Generate Domain" for a free railway.app subdomain
-   - Or click "Custom Domain" to add your own domain
-
-2. **For Custom Domain**
+1. **In Vercel Dashboard**
+   - Go to Settings → Domains
    - Add your domain: `mysteryverse.com`
-   - Railway will provide DNS instructions
-   - Update your domain's DNS records as instructed
+   - Choose configuration type
 
-## Step 8: Post-Deployment Verification
+2. **Update DNS Records**
+
+   For root domain (mysteryverse.com):
+   ```
+   Type: A
+   Name: @
+   Value: 76.76.21.21
+   ```
+
+   For www subdomain:
+   ```
+   Type: CNAME
+   Name: www
+   Value: cname.vercel-dns.com
+   ```
+
+3. **SSL Certificate**
+   - Vercel automatically provisions SSL
+   - Takes 5-30 minutes to activate
+
+## Step 6: Post-Deployment Verification
 
 ### ✅ Backend Health Checks
 ```bash
@@ -218,7 +275,7 @@ curl https://mystery-verse-backend-production.up.railway.app/api/auth/profile
 ```
 
 ### ✅ Frontend Checks
-1. Visit your Railway frontend URL
+1. Visit your Vercel URL
 2. Open browser console (F12)
 3. Check for any API errors
 4. Test user registration
@@ -237,7 +294,7 @@ npx prisma studio
 
 | Issue | Solution |
 |-------|----------|
-| **CORS Error** | Update backend CORS origin to include your frontend Railway URL |
+| **CORS Error** | Update backend CORS origin to include your Vercel frontend URL |
 | **Database Connection Failed** | Check DATABASE_URL in environment variables |
 | **Build Failed on Railway** | Check build logs, ensure all dependencies are in package.json |
 | **API calls failing** | Verify VITE_API_URL points to correct backend URL |
@@ -264,33 +321,28 @@ npx prisma studio
 | `NODE_ENV` | `production` | Environment mode |
 | `ADMIN_PASSWORD` | `SecureAdminPass123!` | Admin panel password |
 
-### Frontend (Railway)
+### Frontend (Vercel)
 | Variable | Example | Description |
 |----------|---------|-------------|
-| `VITE_API_URL` | `https://mystery-verse-backend-production.up.railway.app` | Backend API URL |
+| `VITE_API_URL` | `https://mystery-verse-backend-production.up.railway.app` | Railway backend API URL |
 
 ## 🔄 Updating Your Deployment
 
-### To update both services:
+### To update backend (Railway):
 ```bash
 git add .
-git commit -m "Update mystery verse app"
-git push origin main
-```
-Railway auto-deploys both services on push
-
-### To update specific files:
-```bash
-# Backend changes
-git add backend/
 git commit -m "Update backend"
 git push origin main
+```
+Railway auto-deploys on push
 
-# Frontend changes
-git add frontend/
+### To update frontend (Vercel):
+```bash
+git add .
 git commit -m "Update frontend"
 git push origin main
 ```
+Vercel auto-deploys on push
 
 ## 📝 Important Notes
 
@@ -306,9 +358,9 @@ git push origin main
 - [ ] GitHub repository created and code pushed
 - [ ] Backend service deployed on Railway
 - [ ] PostgreSQL database connected
-- [ ] Frontend service deployed on Railway
+- [ ] Frontend service deployed on Vercel
 - [ ] Backend API responding at Railway URL
-- [ ] Frontend loading at Railway URL
+- [ ] Frontend loading at Vercel URL
 - [ ] User registration working
 - [ ] User login working
 - [ ] All 3 verses playable

@@ -13,17 +13,20 @@ A captivating web application featuring riddles, mathematical puzzles, and an in
 
 ## 🚀 Deployment
 
-### Backend Deployment (Railway)
-1. Deploy backend to Railway
-2. Set environment variables:
-   - `DATABASE_URL` (PostgreSQL)
-   - `JWT_SECRET`
-   - `NODE_ENV=production`
+### Recommended: Vercel Frontend + Railway Backend
 
-### Frontend Deployment (Vercel)
-1. Deploy frontend to Vercel
-2. Set environment variable:
-   - `VITE_API_URL` (your Railway backend URL)
+1. **Backend Deployment (Railway)**:
+   - Deploy backend to Railway with PostgreSQL database
+   - Environment variables: `JWT_SECRET`, `NODE_ENV=production`, `ADMIN_PASSWORD`
+
+2. **Frontend Deployment (Vercel)**:
+   - Deploy frontend to Vercel for optimal performance
+   - Environment variable: `VITE_API_URL` (your Railway backend URL)
+
+📖 **See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) for detailed step-by-step instructions**
+
+### Alternative: Full Railway Deployment
+You can also deploy both frontend and backend to Railway if preferred.
 
 ## 🛠 Tech Stack
 
