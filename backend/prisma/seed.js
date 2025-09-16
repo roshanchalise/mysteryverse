@@ -27,6 +27,13 @@ async function main() {
         description: "Ancient Mahjong tiles lie scattered on a 6×8 grid before you. Your task is to clear the board by matching identical pairs, but beware - only 'free' tiles can be selected. A tile is 'free' if it has no tile directly blocking its left OR right side. Match all 24 pairs to unlock the harmony. Enter coordinates like 'A1 B3' to select two tiles.\n\nThe board uses coordinates A-H (columns) and 1-6 (rows). Corner and edge tiles are often good starting points. Plan your moves carefully - random matching may lead to an unsolvable state where no valid moves remain!",
         clues: "Study the board carefully before making moves. A tile is 'free' when its left OR right side is completely open (no adjacent tile). Focus on freeing up buried tiles by removing their blocking neighbors first. If you get stuck, look for tiles at the edges or corners - they're more likely to be free. The key is strategic thinking, not speed.",
         answer: "COMPLETE"
+      },
+      {
+        orderIndex: 4,
+        title: "The Pattern Decoder",
+        description: "Look at this sequence: 2, 6, 12, 20, 30, ?. Each number follows a hidden pattern. Your task is to discover the rule and find the next number in the sequence. Think carefully about the relationship between consecutive numbers and their positions.",
+        clues: "Look at the differences between consecutive numbers: 6-2=4, 12-6=6, 20-12=8, 30-20=10. The differences form an arithmetic sequence: 4, 6, 8, 10... What's the next difference?",
+        answer: "42"
       }
     ]
   });
