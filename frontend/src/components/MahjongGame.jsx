@@ -1,10 +1,16 @@
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 
-// Mahjong tile Unicode characters (24 unique symbols)
-const MAHJONG_TILES = [
+// Themed tiles with one intentional mismatch
+// Theme: Chinese characters with ONE different symbol hidden
+const THEMED_TILES = [
   '🀀', '🀁', '🀂', '🀃', '🀄', '🀅', '🀆', '🀇', '🀈', '🀉', '🀊', '🀋',
-  '🀌', '🀍', '🀎', '🀏', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖', '🀗'
+  '🀌', '🀍', '🀎', '🀏', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖'
 ];
+
+// The MISMATCH tile that doesn't belong to the theme
+const MISMATCH_TILE = '🎯'; // Different from Mahjong theme
+
+const MAHJONG_TILES = [...THEMED_TILES, MISMATCH_TILE];
 
 // Generate board using guaranteed solvable method
 const generateBoard = () => {
@@ -126,9 +132,10 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
   const initialState = loadGameState();
   const [board, setBoard] = useState(initialState.board);
   const [selectedTiles, setSelectedTiles] = useState(initialState.selectedTiles);
-  const [message, setMessage] = useState(initialState.message);
+  const [message, setMessage] = useState(initialState.message || 'Find the mismatched tile first! Look for the one that doesn\'t belong with the theme.');
   const [gameStatus, setGameStatus] = useState(initialState.gameStatus);
   const [tilesRemaining, setTilesRemaining] = useState(initialState.tilesRemaining);
+  const [mismatchFound, setMismatchFound] = useState(initialState.mismatchFound || false);
 
   // Save game state to localStorage
   const saveGameState = useCallback(() => {
@@ -138,13 +145,14 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         selectedTiles,
         message,
         gameStatus,
-        tilesRemaining
+        tilesRemaining,
+        mismatchFound
       };
       localStorage.setItem('mahjong-verse3-state', JSON.stringify(gameState));
     } catch (error) {
       console.warn('Failed to save game state:', error);
     }
-  }, [board, selectedTiles, message, gameStatus, tilesRemaining]);
+  }, [board, selectedTiles, message, gameStatus, tilesRemaining, mismatchFound]);
 
   // Convert row/col to coordinate string (A1, B2, etc.)
   const getCoordinateString = (row, col) => {
@@ -299,6 +307,21 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
       const [first, second] = newSelectedTiles;
       
       if (first.tile === second.tile) {
+        // Check if this is the mismatch tile
+        if (first.tile === MISMATCH_TILE && !mismatchFound) {
+          setMismatchFound(true);
+          setMessage(`🎯 MISMATCH FOUND! You identified the tile that doesn't belong! Now you can match other tiles freely.`);
+          setSelectedTiles([]);
+          return;
+        }
+
+        // If mismatch not found yet, prevent other matches
+        if (!mismatchFound && first.tile !== MISMATCH_TILE) {
+          setSelectedTiles([]);
+          setMessage(`🚫 Find the mismatched tile first! Look for the one that doesn't belong with the Mahjong theme.`);
+          return;
+        }
+
         // Matching tiles - remove them
         const newBoard = board.map(boardRow => [...boardRow]);
         newBoard[first.row][first.col].visible = false;
@@ -330,7 +353,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
 
         setBoard(newBoard);
         setSelectedTiles([]);
-        setMessage(`✅ Match found! Board reshuffled - pure chaos continues!`);
+        setMessage(`✅ Match found! Board reshuffled - chaos continues!`);
 
         setTimeout(() => {
           checkGameState(newBoard);
@@ -352,9 +375,10 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     const newBoard = generateBoard();
     setBoard(newBoard);
     setSelectedTiles([]);
-    setMessage('New game started! Select two matching tiles.');
+    setMessage('Find the mismatched tile first! Look for the one that doesn\'t belong with the theme.');
     setGameStatus('playing');
     setTilesRemaining(48);
+    setMismatchFound(false);
     onGameStateChange(newBoard);
   };
 
