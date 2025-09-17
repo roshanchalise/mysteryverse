@@ -8,13 +8,11 @@ const MAHJONG_TILES = [
 
 // Generate board using guaranteed solvable method
 const generateBoard = () => {
-  // Add timestamp-based randomization for different boards each time
-  const seed = Date.now();
-  return generateOptimalBoard(seed);
+  return generateOptimalBoard();
 };
 
-// Generate board with strategic placement to ensure solvability
-const generateOptimalBoard = (seed) => {
+// Generate board with fixed layout to ensure consistent experience
+const generateOptimalBoard = () => {
   const board = [];
 
   // Initialize empty board
@@ -30,28 +28,22 @@ const generateOptimalBoard = (seed) => {
     }
   }
 
-  // Create all 48 positions
-  const allPositions = [];
+  // Fixed, carefully designed solvable layout
+  // This ensures all players get the same challenge
+  const fixedLayout = [
+    ['🀀', '🀁', '🀂', '🀃', '🀄', '🀅', '🀆', '🀇'],
+    ['🀈', '🀉', '🀊', '🀋', '🀌', '🀍', '🀎', '🀏'],
+    ['🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖', '🀗'],
+    ['🀗', '🀖', '🀕', '🀔', '🀓', '🀒', '🀑', '🀐'],
+    ['🀏', '🀎', '🀍', '🀌', '🀋', '🀊', '🀉', '🀈'],
+    ['🀇', '🀆', '🀅', '🀄', '🀃', '🀂', '🀁', '🀀']
+  ];
+
+  // Place tiles according to fixed layout
   for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 8; col++) {
-      allPositions.push([row, col]);
+      board[row][col].tile = fixedLayout[row][col];
     }
-  }
-
-  // Fully randomize positions based on seed
-  shuffleArray(allPositions);
-
-  // Also randomize the tile order for additional variety
-  const tilePairs = [];
-  for (let i = 0; i < MAHJONG_TILES.length; i++) {
-    tilePairs.push(MAHJONG_TILES[i], MAHJONG_TILES[i]); // Add each tile twice
-  }
-  shuffleArray(tilePairs);
-
-  // Place tiles on the board
-  for (let i = 0; i < tilePairs.length && i < allPositions.length; i++) {
-    const [row, col] = allPositions[i];
-    board[row][col].tile = tilePairs[i];
   }
 
   return board;
@@ -368,22 +360,16 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
       </div>
 
       {/* Game Controls */}
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={resetGame}
-          className="px-4 py-2 bg-mystery-gold hover:bg-opacity-80 text-white rounded-lg font-medium transition-colors"
-        >
-          New Board
-        </button>
-        {gameStatus === 'lost' && (
+      {gameStatus === 'lost' && (
+        <div className="flex justify-center">
           <button
             onClick={resetGame}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
+            className="px-4 py-2 bg-mystery-gold hover:bg-opacity-80 text-white rounded-lg font-medium transition-colors"
           >
             Try Again
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Game Rules */}
       <div className="mt-6 text-sm text-gray-400">
