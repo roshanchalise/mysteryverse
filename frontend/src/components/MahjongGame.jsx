@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 
-// Themed tiles with one intentional mismatch
-// Theme: Chinese characters with ONE different symbol hidden
+// Themed tiles - All traditional Mahjong characters (visually consistent)
+// Theme: Traditional Mahjong tiles with black/white minimal aesthetic
 const THEMED_TILES = [
-  '🀀', '🀁', '🀂', '🀃', '🀄', '🀅', '🀆', '🀇', '🀈', '🀉', '🀊', '🀋',
-  '🀌', '🀍', '🀎', '🀏', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖'
+  '🀀', '🀁', '🀂', '🀃', '🀅', '🀆', '🀇', '🀈', '🀉', '🀊', '🀋',
+  '🀌', '🀍', '🀎', '🀏', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖', '🀗'
 ];
 
-// The MISMATCH tile that doesn't belong to the theme
-const MISMATCH_TILE = '🎯'; // Different from Mahjong theme
+// The MISMATCH tile - visually similar but thematically different
+// Simple geometric shape that blends visually but isn't Mahjong
+const MISMATCH_TILE = '◯'; // Simple circle - matches minimal aesthetic but not Mahjong
 
 const MAHJONG_TILES = [...THEMED_TILES, MISMATCH_TILE];
 
@@ -132,7 +133,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
   const initialState = loadGameState();
   const [board, setBoard] = useState(initialState.board);
   const [selectedTiles, setSelectedTiles] = useState(initialState.selectedTiles);
-  const [message, setMessage] = useState(initialState.message || 'Find the mismatched tile first! Look for the one that doesn\'t belong with the theme.');
+  const [message, setMessage] = useState(initialState.message || 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.');
   const [gameStatus, setGameStatus] = useState(initialState.gameStatus);
   const [tilesRemaining, setTilesRemaining] = useState(initialState.tilesRemaining);
   const [mismatchFound, setMismatchFound] = useState(initialState.mismatchFound || false);
@@ -310,7 +311,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         // Check if this is the mismatch tile
         if (first.tile === MISMATCH_TILE && !mismatchFound) {
           setMismatchFound(true);
-          setMessage(`🎯 MISMATCH FOUND! You identified the tile that doesn't belong! Now you can match other tiles freely.`);
+          setMessage(`◯ THEMATIC MISMATCH FOUND! You identified the non-Mahjong symbol! Now you can match traditional tiles freely.`);
           setSelectedTiles([]);
           return;
         }
@@ -318,7 +319,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         // If mismatch not found yet, prevent other matches
         if (!mismatchFound && first.tile !== MISMATCH_TILE) {
           setSelectedTiles([]);
-          setMessage(`🚫 Find the mismatched tile first! Look for the one that doesn't belong with the Mahjong theme.`);
+          setMessage(`🚫 Find the thematic mismatch first! Look carefully - one symbol is not a traditional Mahjong character.`);
           return;
         }
 
@@ -375,7 +376,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     const newBoard = generateBoard();
     setBoard(newBoard);
     setSelectedTiles([]);
-    setMessage('Find the mismatched tile first! Look for the one that doesn\'t belong with the theme.');
+    setMessage('Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.');
     setGameStatus('playing');
     setTilesRemaining(48);
     setMismatchFound(false);
