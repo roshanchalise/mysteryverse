@@ -359,17 +359,6 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         ))}
       </div>
 
-      {/* Game Controls */}
-      {gameStatus === 'lost' && (
-        <div className="flex justify-center">
-          <button
-            onClick={resetGame}
-            className="px-4 py-2 bg-mystery-gold hover:bg-opacity-80 text-white rounded-lg font-medium transition-colors"
-          >
-            Try Again
-          </button>
-        </div>
-      )}
 
       {/* Game Rules */}
       <div className="mt-6 text-sm text-gray-400">
