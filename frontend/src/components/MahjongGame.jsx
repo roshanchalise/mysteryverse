@@ -8,13 +8,15 @@ const MAHJONG_TILES = [
 
 // Generate board using guaranteed solvable method
 const generateBoard = () => {
-  return generateOptimalBoard();
+  // Add timestamp-based randomization for different boards each time
+  const seed = Date.now();
+  return generateOptimalBoard(seed);
 };
 
 // Generate board with strategic placement to ensure solvability
-const generateOptimalBoard = () => {
+const generateOptimalBoard = (seed) => {
   const board = [];
-  
+
   // Initialize empty board
   for (let row = 0; row < 6; row++) {
     board[row] = [];
@@ -27,63 +29,31 @@ const generateOptimalBoard = () => {
       };
     }
   }
-  
-  // Strategy: Ensure pairs are placed so at least one is always accessible
-  // Priority order: corners -> edges -> inner positions
-  const positions = [];
-  
-  // Corners (highest priority - always free)
-  positions.push(
-    [0, 0], [0, 7], [5, 0], [5, 7]
-  );
-  
-  // Edge positions (high priority - usually free)
-  // Top and bottom edges
-  for (let col = 1; col < 7; col++) {
-    positions.push([0, col], [5, col]);
-  }
-  
-  // Left and right edges
-  for (let row = 1; row < 5; row++) {
-    positions.push([row, 0], [row, 7]);
-  }
-  
-  // Inner positions (lower priority)
-  for (let row = 1; row < 5; row++) {
-    for (let col = 1; col < 7; col++) {
-      positions.push([row, col]);
+
+  // Create all 48 positions
+  const allPositions = [];
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 8; col++) {
+      allPositions.push([row, col]);
     }
   }
-  
-  // Shuffle positions within each priority group to add randomness
-  const corners = positions.slice(0, 4);
-  const edges = positions.slice(4, 28);
-  const inner = positions.slice(28);
-  
-  // Shuffle each group
-  shuffleArray(corners);
-  shuffleArray(edges);
-  shuffleArray(inner);
-  
-  // Recombine
-  const shuffledPositions = [...corners, ...edges, ...inner];
-  
-  // Place pairs ensuring at least one tile per pair is in a favorable position
-  let posIndex = 0;
-  for (let tileIndex = 0; tileIndex < MAHJONG_TILES.length; tileIndex++) {
-    const tile = MAHJONG_TILES[tileIndex];
-    
-    // Place first tile of pair
-    const [row1, col1] = shuffledPositions[posIndex];
-    board[row1][col1].tile = tile;
-    posIndex++;
-    
-    // Place second tile of pair - try to ensure at least one is accessible
-    const [row2, col2] = shuffledPositions[posIndex];
-    board[row2][col2].tile = tile;
-    posIndex++;
+
+  // Fully randomize positions based on seed
+  shuffleArray(allPositions);
+
+  // Also randomize the tile order for additional variety
+  const tilePairs = [];
+  for (let i = 0; i < MAHJONG_TILES.length; i++) {
+    tilePairs.push(MAHJONG_TILES[i], MAHJONG_TILES[i]); // Add each tile twice
   }
-  
+  shuffleArray(tilePairs);
+
+  // Place tiles on the board
+  for (let i = 0; i < tilePairs.length && i < allPositions.length; i++) {
+    const [row, col] = allPositions[i];
+    board[row][col].tile = tilePairs[i];
+  }
+
   return board;
 };
 
@@ -398,16 +368,22 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
       </div>
 
       {/* Game Controls */}
-      {gameStatus === 'lost' && (
-        <div className="flex justify-center">
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={resetGame}
+          className="px-4 py-2 bg-mystery-gold hover:bg-opacity-80 text-white rounded-lg font-medium transition-colors"
+        >
+          New Board
+        </button>
+        {gameStatus === 'lost' && (
           <button
             onClick={resetGame}
-            className="px-4 py-2 bg-mystery-gold hover:bg-opacity-80 text-white rounded-lg font-medium transition-colors"
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
           >
             Try Again
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Game Rules */}
       <div className="mt-6 text-sm text-gray-400">
