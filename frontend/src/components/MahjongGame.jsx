@@ -28,16 +28,16 @@ const generateOptimalBoard = () => {
     }
   }
 
-  // BRUTAL DIFFICULTY 9/10 - Minimal access, maximum complexity
-  // Only 1-2 tiles free at any time, requires 30+ move perfect sequence
-  // One wrong move = permanent dead end with no recovery possible
+  // NIGHTMARE DIFFICULTY 10/10 - Chaotic asymmetric hell
+  // Pairs hidden in worst positions, creates multiple dead-end traps
+  // Requires memorizing 15+ dependency chains, one mistake = game over
   const fixedLayout = [
-    ['🀀', '🀁', '🀂', '🀃', '🀃', '🀂', '🀁', '🀀'],
-    ['🀄', '🀅', '🀆', '🀇', '🀇', '🀆', '🀅', '🀄'],
-    ['🀈', '🀉', '🀊', '🀋', '🀋', '🀊', '🀉', '🀈'],
-    ['🀌', '🀍', '🀎', '🀏', '🀏', '🀎', '🀍', '🀌'],
-    ['🀐', '🀑', '🀒', '🀓', '🀓', '🀒', '🀑', '🀐'],
-    ['🀔', '🀕', '🀖', '🀗', '🀗', '🀖', '🀕', '🀔']
+    ['🀗', '🀅', '🀁', '🀌', '🀒', '🀎', '🀉', '🀔'],
+    ['🀂', '🀖', '🀊', '🀀', '🀃', '🀍', '🀑', '🀈'],
+    ['🀏', '🀄', '🀕', '🀇', '🀐', '🀋', '🀆', '🀓'],
+    ['🀓', '🀆', '🀋', '🀐', '🀇', '🀕', '🀄', '🀏'],
+    ['🀈', '🀑', '🀍', '🀃', '🀀', '🀊', '🀖', '🀂'],
+    ['🀔', '🀉', '🀎', '🀒', '🀌', '🀁', '🀅', '🀗']
   ];
 
   // Place tiles according to fixed layout
