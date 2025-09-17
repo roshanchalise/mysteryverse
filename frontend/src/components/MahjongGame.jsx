@@ -28,16 +28,16 @@ const generateOptimalBoard = () => {
     }
   }
 
-  // EXTREME DIFFICULTY 10/10 - Maximum complexity puzzle
-  // Pairs are placed at opposite corners/edges with heavy central blocking
-  // Only 2-4 tiles are free at start, wrong moves = instant dead end
+  // DIABOLICAL DIFFICULTY 10/10 - Designed to trap players
+  // Creates multiple dead-end scenarios where obvious moves block essential pairs
+  // Only ONE correct sequence exists - all other paths lead to unsolvable state
   const fixedLayout = [
-    ['🀀', '🀋', '🀖', '🀂', '🀍', '🀈', '🀓', '🀄'],
-    ['🀏', '🀅', '🀐', '🀊', '🀕', '🀁', '🀌', '🀗'],
-    ['🀇', '🀒', '🀉', '🀔', '🀆', '🀑', '🀎', '🀃'],
-    ['🀃', '🀎', '🀑', '🀆', '🀔', '🀉', '🀒', '🀇'],
-    ['🀗', '🀌', '🀁', '🀕', '🀊', '🀐', '🀅', '🀏'],
-    ['🀄', '🀓', '🀈', '🀍', '🀂', '🀖', '🀋', '🀀']
+    ['🀈', '🀔', '🀉', '🀅', '🀍', '🀁', '🀖', '🀐'],
+    ['🀓', '🀀', '🀏', '🀒', '🀃', '🀎', '🀄', '🀋'],
+    ['🀇', '🀌', '🀗', '🀊', '🀕', '🀂', '🀆', '🀑'],
+    ['🀑', '🀆', '🀂', '🀕', '🀊', '🀗', '🀌', '🀇'],
+    ['🀋', '🀄', '🀎', '🀃', '🀒', '🀏', '🀀', '🀓'],
+    ['🀐', '🀖', '🀁', '🀍', '🀅', '🀉', '🀔', '🀈']
   ];
 
   // Place tiles according to fixed layout
