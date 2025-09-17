@@ -2,9 +2,6 @@
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
   "framework": "vite",
-  "git": {
-    "deploymentEnabled": false
-  },
   "rewrites": [
     {
       "source": "/(.*)",
