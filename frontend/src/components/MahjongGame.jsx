@@ -97,11 +97,54 @@ const hasValidMoves = (board) => {
 };
 
 const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
-  const [board, setBoard] = useState(() => generateBoard());
-  const [selectedTiles, setSelectedTiles] = useState([]);
-  const [message, setMessage] = useState('Select two matching tiles to remove them from the board.');
-  const [gameStatus, setGameStatus] = useState('playing'); // 'playing', 'won', 'lost'
-  const [tilesRemaining, setTilesRemaining] = useState(48);
+  // Load saved game state from localStorage or create new game
+  const loadGameState = () => {
+    try {
+      const savedState = localStorage.getItem('mahjong-verse3-state');
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        return {
+          board: parsed.board || generateBoard(),
+          selectedTiles: parsed.selectedTiles || [],
+          message: parsed.message || 'Select two matching tiles to remove them from the board.',
+          gameStatus: parsed.gameStatus || 'playing',
+          tilesRemaining: parsed.tilesRemaining || 48
+        };
+      }
+    } catch (error) {
+      console.warn('Failed to load saved game state:', error);
+    }
+    return {
+      board: generateBoard(),
+      selectedTiles: [],
+      message: 'Select two matching tiles to remove them from the board.',
+      gameStatus: 'playing',
+      tilesRemaining: 48
+    };
+  };
+
+  const initialState = loadGameState();
+  const [board, setBoard] = useState(initialState.board);
+  const [selectedTiles, setSelectedTiles] = useState(initialState.selectedTiles);
+  const [message, setMessage] = useState(initialState.message);
+  const [gameStatus, setGameStatus] = useState(initialState.gameStatus);
+  const [tilesRemaining, setTilesRemaining] = useState(initialState.tilesRemaining);
+
+  // Save game state to localStorage
+  const saveGameState = useCallback(() => {
+    try {
+      const gameState = {
+        board,
+        selectedTiles,
+        message,
+        gameStatus,
+        tilesRemaining
+      };
+      localStorage.setItem('mahjong-verse3-state', JSON.stringify(gameState));
+    } catch (error) {
+      console.warn('Failed to save game state:', error);
+    }
+  }, [board, selectedTiles, message, gameStatus, tilesRemaining]);
 
   // Convert row/col to coordinate string (A1, B2, etc.)
   const getCoordinateString = (row, col) => {
@@ -194,6 +237,8 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     if (remaining === 0) {
       setGameStatus('won');
       setMessage('🎉 Congratulations! All tiles cleared! The harmony is restored.');
+      // Clear saved game state on completion
+      localStorage.removeItem('mahjong-verse3-state');
       onComplete();
       return;
     }
@@ -277,6 +322,9 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
 
   // Reset game
   const resetGame = () => {
+    // Clear saved game state
+    localStorage.removeItem('mahjong-verse3-state');
+
     const newBoard = generateBoard();
     setBoard(newBoard);
     setSelectedTiles([]);
@@ -295,6 +343,11 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
   const isTileSelected = (row, col) => {
     return selectedTiles.some(selected => selected.row === row && selected.col === col);
   };
+
+  // Save game state whenever it changes
+  useEffect(() => {
+    saveGameState();
+  }, [saveGameState]);
 
   // Initial game state check
   useEffect(() => {
