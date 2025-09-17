@@ -1,17 +1,20 @@
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 
 // Themed tiles - All traditional Mahjong characters (visually consistent)
-// Theme: Traditional Mahjong tiles with black/white minimal aesthetic
+// Theme: Traditional Mahjong tiles with black/white minimal aesthetic - complex versions
 const THEMED_TILES = [
-  '🀀', '🀁', '🀂', '🀃', '🀅', '🀆', '🀇', '🀈', '🀉', '🀊', '🀋',
-  '🀌', '🀍', '🀎', '🀏', '🀐', '🀑', '🀒', '🀓', '🀔', '🀕', '🀖', '🀗'
+  '🀀', '🀁', '🀂', '🀃', '🀅', '🀤', '🀇', '🀈', '🀉', '🀊', '🀋',
+  '🀌', '🀍', '🀎', '🀏', '🀐', '🀧', '🀩', '🀥', '🀆', '🀨', '🀦', '🀪'
 ];
 
 // The MISMATCH tile - visually similar but thematically different
-// Simple geometric shape that blends visually but isn't Mahjong
-const MISMATCH_TILE = '◯'; // Simple circle - matches minimal aesthetic but not Mahjong
+// Complex geometric shape that blends visually but isn't Mahjong
+const MISMATCH_TILE = '◉'; // Complex circle with dot - subtle non-Mahjong mismatch
 
 const MAHJONG_TILES = [...THEMED_TILES, MISMATCH_TILE];
+
+// Version number to track tile configuration changes
+const GAME_VERSION = '2.3'; // Updated when tile configuration changes
 
 // Generate board using guaranteed solvable method
 const generateBoard = () => {
@@ -110,13 +113,21 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
       const savedState = localStorage.getItem('mahjong-verse3-state');
       if (savedState) {
         const parsed = JSON.parse(savedState);
-        return {
-          board: parsed.board || generateBoard(),
-          selectedTiles: parsed.selectedTiles || [],
-          message: parsed.message || 'Select two matching tiles to remove them from the board.',
-          gameStatus: parsed.gameStatus || 'playing',
-          tilesRemaining: parsed.tilesRemaining || 48
-        };
+        // Check if saved state is from current game version
+        if (parsed.version === GAME_VERSION) {
+          return {
+            board: parsed.board || generateBoard(),
+            selectedTiles: parsed.selectedTiles || [],
+            message: parsed.message || 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.',
+            gameStatus: parsed.gameStatus || 'playing',
+            tilesRemaining: parsed.tilesRemaining || 48,
+            mismatchFound: parsed.mismatchFound || false,
+            version: GAME_VERSION
+          };
+        } else {
+          // Clear old version data
+          localStorage.removeItem('mahjong-verse3-state');
+        }
       }
     } catch (error) {
       console.warn('Failed to load saved game state:', error);
@@ -124,9 +135,11 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     return {
       board: generateBoard(),
       selectedTiles: [],
-      message: 'Select two matching tiles to remove them from the board.',
+      message: 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.',
       gameStatus: 'playing',
-      tilesRemaining: 48
+      tilesRemaining: 48,
+      mismatchFound: false,
+      version: GAME_VERSION
     };
   };
 
@@ -147,7 +160,8 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         message,
         gameStatus,
         tilesRemaining,
-        mismatchFound
+        mismatchFound,
+        version: GAME_VERSION
       };
       localStorage.setItem('mahjong-verse3-state', JSON.stringify(gameState));
     } catch (error) {
@@ -311,7 +325,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         // Check if this is the mismatch tile
         if (first.tile === MISMATCH_TILE && !mismatchFound) {
           setMismatchFound(true);
-          setMessage(`◯ THEMATIC MISMATCH FOUND! You identified the non-Mahjong symbol! Now you can match traditional tiles freely.`);
+          setMessage(`◉ THEMATIC MISMATCH FOUND! You identified the non-Mahjong symbol! Now you can match traditional tiles freely.`);
           setSelectedTiles([]);
           return;
         }
