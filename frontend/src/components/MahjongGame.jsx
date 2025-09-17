@@ -28,16 +28,16 @@ const generateOptimalBoard = () => {
     }
   }
 
-  // MAXIMUM CHAOS - Completely asymmetric with scattered pairs
-  // Pairs placed to create maximum confusion and blocking complexity
-  // No patterns, no symmetry, pure strategic nightmare
+  // PURE CHAOS NIGHTMARE - Maximum asymmetric complexity
+  // Every pair scattered in most unpredictable positions possible
+  // Zero patterns, maximum cognitive overload, impossible to memorize
   const fixedLayout = [
-    ['🀖', '🀃', '🀋', '🀈', '🀐', '🀅', '🀁', '🀒'],
-    ['🀉', '🀔', '🀀', '🀌', '🀓', '🀏', '🀄', '🀇'],
-    ['🀕', '🀂', '🀍', '🀗', '🀊', '🀆', '🀑', '🀎'],
-    ['🀐', '🀗', '🀄', '🀁', '🀔', '🀃', '🀉', '🀕'],
-    ['🀇', '🀒', '🀏', '🀓', '🀌', '🀀', '🀈', '🀂'],
-    ['🀎', '🀑', '🀆', '🀊', '🀍', '🀋', '🀅', '🀖']
+    ['🀓', '🀂', '🀖', '🀉', '🀍', '🀏', '🀃', '🀈'],
+    ['🀆', '🀋', '🀁', '🀔', '🀐', '🀄', '🀒', '🀀'],
+    ['🀌', '🀕', '🀇', '🀊', '🀗', '🀅', '🀎', '🀑'],
+    ['🀈', '🀐', '🀑', '🀅', '🀂', '🀊', '🀔', '🀌'],
+    ['🀀', '🀇', '🀄', '🀎', '🀕', '🀁', '🀋', '🀗'],
+    ['🀒', '🀍', '🀃', '🀏', '🀆', '🀖', '🀉', '🀓']
   ];
 
   // Place tiles according to fixed layout
