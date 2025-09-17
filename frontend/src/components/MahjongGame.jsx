@@ -28,17 +28,16 @@ const generateOptimalBoard = () => {
     }
   }
 
-  // EXPERT STRATEGIC LAYOUT - Designed using bottleneck principles
-  // Creates interdependencies, buries matching tiles, and uses strategic traps
-  // Only 2 initial moves possible, wrong choice = permanent dead end
-  // GUARANTEED SOLVABLE - Generated using reverse-solve methodology
+  // MAXIMUM CHAOS - Completely asymmetric with scattered pairs
+  // Pairs placed to create maximum confusion and blocking complexity
+  // No patterns, no symmetry, pure strategic nightmare
   const fixedLayout = [
-    ['🀅', '🀈', '🀐', '🀓', '🀔', '🀑', '🀉', '🀆'],
-    ['🀋', '🀀', '🀇', '🀊', '🀍', '🀃', '🀁', '🀌'],
-    ['🀎', '🀒', '🀏', '🀖', '🀗', '🀂', '🀕', '🀄'],
-    ['🀄', '🀕', '🀂', '🀗', '🀖', '🀏', '🀒', '🀎'],
-    ['🀌', '🀁', '🀃', '🀍', '🀊', '🀇', '🀀', '🀋'],
-    ['🀆', '🀉', '🀑', '🀔', '🀓', '🀐', '🀈', '🀅']
+    ['🀖', '🀃', '🀋', '🀈', '🀐', '🀅', '🀁', '🀒'],
+    ['🀉', '🀔', '🀀', '🀌', '🀓', '🀏', '🀄', '🀇'],
+    ['🀕', '🀂', '🀍', '🀗', '🀊', '🀆', '🀑', '🀎'],
+    ['🀐', '🀗', '🀄', '🀁', '🀔', '🀃', '🀉', '🀕'],
+    ['🀇', '🀒', '🀏', '🀓', '🀌', '🀀', '🀈', '🀂'],
+    ['🀎', '🀑', '🀆', '🀊', '🀍', '🀋', '🀅', '🀖']
   ];
 
   // Place tiles according to fixed layout
