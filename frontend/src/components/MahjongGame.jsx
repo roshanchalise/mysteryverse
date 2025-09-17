@@ -11,7 +11,7 @@ const generateBoard = () => {
   return generateOptimalBoard();
 };
 
-// Generate board with fixed layout to ensure consistent experience
+// Generate board with completely random layout - changes every move
 const generateOptimalBoard = () => {
   const board = [];
 
@@ -28,22 +28,21 @@ const generateOptimalBoard = () => {
     }
   }
 
-  // PURE CHAOS NIGHTMARE - Maximum asymmetric complexity
-  // Every pair scattered in most unpredictable positions possible
-  // Zero patterns, maximum cognitive overload, impossible to memorize
-  const fixedLayout = [
-    ['🀓', '🀂', '🀖', '🀉', '🀍', '🀏', '🀃', '🀈'],
-    ['🀆', '🀋', '🀁', '🀔', '🀐', '🀄', '🀒', '🀀'],
-    ['🀌', '🀕', '🀇', '🀊', '🀗', '🀅', '🀎', '🀑'],
-    ['🀈', '🀐', '🀑', '🀅', '🀂', '🀊', '🀔', '🀌'],
-    ['🀀', '🀇', '🀄', '🀎', '🀕', '🀁', '🀋', '🀗'],
-    ['🀒', '🀍', '🀃', '🀏', '🀆', '🀖', '🀉', '🀓']
-  ];
+  // Create tile pairs array (2 of each tile)
+  const tilePairs = [];
+  for (let i = 0; i < MAHJONG_TILES.length; i++) {
+    tilePairs.push(MAHJONG_TILES[i], MAHJONG_TILES[i]);
+  }
 
-  // Place tiles according to fixed layout
+  // COMPLETELY RANDOM SHUFFLE - No patterns, pure chaos
+  shuffleArray(tilePairs);
+
+  // Place randomly shuffled tiles on board
+  let tileIndex = 0;
   for (let row = 0; row < 6; row++) {
     for (let col = 0; col < 8; col++) {
-      board[row][col].tile = fixedLayout[row][col];
+      board[row][col].tile = tilePairs[tileIndex];
+      tileIndex++;
     }
   }
 
@@ -304,11 +303,35 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         const newBoard = board.map(boardRow => [...boardRow]);
         newBoard[first.row][first.col].visible = false;
         newBoard[second.row][second.col].visible = false;
-        
+
+        // DYNAMIC CHAOS: Reshuffle remaining tiles after each match
+        const remainingTiles = [];
+        const emptyPositions = [];
+
+        // Collect remaining visible tiles and empty positions
+        for (let row = 0; row < 6; row++) {
+          for (let col = 0; col < 8; col++) {
+            if (newBoard[row][col].visible) {
+              remainingTiles.push(newBoard[row][col].tile);
+              emptyPositions.push({row, col});
+            }
+          }
+        }
+
+        // Randomly shuffle remaining tiles
+        shuffleArray(remainingTiles);
+
+        // Redistribute tiles to visible positions
+        emptyPositions.forEach((pos, index) => {
+          if (index < remainingTiles.length) {
+            newBoard[pos.row][pos.col].tile = remainingTiles[index];
+          }
+        });
+
         setBoard(newBoard);
         setSelectedTiles([]);
-        setMessage(`✅ Match found! ${getCoordinateString(first.row, first.col)} and ${getCoordinateString(second.row, second.col)} removed.`);
-        
+        setMessage(`✅ Match found! Board reshuffled - pure chaos continues!`);
+
         setTimeout(() => {
           checkGameState(newBoard);
           onGameStateChange(newBoard);
