@@ -1,0 +1,427 @@
+.symbol-matching-container {
+  padding: 15px;
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.challenge-header-section {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.05));
+  border-radius: 10px;
+  padding: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+.game-main-title {
+  font-size: 1.6em;
+  color: #ffd700;
+  margin-bottom: 10px;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  letter-spacing: 2px;
+  font-weight: bold;
+}
+
+.game-introduction {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.game-introduction p {
+  font-size: 0.95em;
+  line-height: 1.4;
+  color: #e0e0e0;
+  margin: 0;
+  text-align: center;
+}
+
+.divider-line {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.5), transparent);
+  margin: 20px 0;
+  flex-shrink: 0;
+}
+
+.game-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.game-status-section {
+  text-align: center;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.game-title {
+  font-size: 1.2em;
+  color: #ffd700;
+  margin-bottom: 10px;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.progress-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-text {
+  font-size: 1.1em;
+  color: #cccccc;
+  font-weight: 500;
+}
+
+.progress-bar {
+  width: 300px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4caf50, #8bc34a);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.feedback-message {
+  text-align: center;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.feedback-success {
+  background: rgba(76, 175, 80, 0.2);
+  border: 1px solid #4caf50;
+  color: #4caf50;
+}
+
+.feedback-error {
+  background: rgba(244, 67, 54, 0.2);
+  border: 1px solid #f44336;
+  color: #f44336;
+}
+
+.feedback-warning {
+  background: rgba(255, 152, 0, 0.2);
+  border: 1px solid #ff9800;
+  color: #ff9800;
+}
+
+.feedback-victory {
+  background: rgba(255, 215, 0, 0.2);
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  font-size: 1.3em;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 10px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.section-title {
+  font-size: 1.3em;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.symbols-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.symbols-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  align-items: start;
+}
+
+.symbol-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  cursor: grab;
+  transition: all 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.symbol-item:hover:not(.matched) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffd700;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.symbol-item.dragging {
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+.symbol-item.matched {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: #4caf50;
+  cursor: default;
+  opacity: 0.7;
+}
+
+.symbol-display {
+  font-size: 2em;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.symbol-name {
+  font-size: 0.75em;
+  color: #cccccc;
+  font-weight: 500;
+  text-align: center;
+  margin-top: auto;
+}
+
+.meanings-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.meanings-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.meaning-item {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.meaning-item:hover {
+  border-color: #ffd700;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.meaning-item.has-match {
+  background: rgba(76, 175, 80, 0.15);
+  border: 2px solid #4caf50;
+}
+
+.matched-symbol {
+  font-size: 1.5em;
+  min-width: 35px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.meaning-text {
+  flex: 1;
+  font-size: 0.85em;
+  line-height: 1.3;
+  color: #e0e0e0;
+}
+
+.game-instructions {
+  background: rgba(33, 150, 243, 0.1);
+  border: 1px solid #2196f3;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.game-instructions p {
+  margin: 0;
+  color: #90caf9;
+  font-size: 0.85em;
+  line-height: 1.3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .symbol-matching-container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .challenge-header-section {
+    padding: 15px;
+  }
+
+  .game-main-title {
+    font-size: 1.4em;
+  }
+
+  .game-introduction p {
+    font-size: 0.9em;
+  }
+
+  .divider-line {
+    margin: 15px 0;
+  }
+
+  .game-board {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .symbols-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .meanings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .symbol-display {
+    font-size: 2em;
+    height: 50px;
+  }
+
+  .symbol-name {
+    font-size: 0.85em;
+  }
+
+  .meaning-text {
+    font-size: 0.9em;
+  }
+
+  .progress-bar {
+    width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .symbol-matching-container {
+    padding: 15px;
+  }
+
+  .challenge-header-section {
+    padding: 12px;
+  }
+
+  .game-main-title {
+    font-size: 1.5em;
+    letter-spacing: 1px;
+  }
+
+  .game-introduction p {
+    font-size: 0.95em;
+  }
+
+  .game-title {
+    font-size: 1.3em;
+  }
+
+  .symbols-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .symbol-display {
+    font-size: 1.8em;
+    height: 45px;
+  }
+
+  .matched-symbol {
+    font-size: 1.5em;
+    min-width: 40px;
+  }
+
+  .progress-bar {
+    width: 200px;
+  }
+}
+
+/* Drag and Drop Effects */
+@media (pointer: coarse) {
+  .symbol-item {
+    cursor: pointer;
+  }
+}
+
+.symbol-item:active {
+  cursor: grabbing;
+}
+
+/* Animation for successful matches */
+@keyframes matchSuccess {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.meaning-item.has-match {
+  animation: matchSuccess 0.5s ease;
+}
+
+/* Pulse animation for completed game */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.feedback-victory {
+  animation: pulse 2s infinite;
+}

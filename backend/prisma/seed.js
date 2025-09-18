@@ -9,17 +9,17 @@ async function main() {
     data: [
       {
         orderIndex: 1,
-        title: "The First Riddle",
-        description: "I speak without a mouth and hear without ears. I have no body, but come alive with fears. In mountains I boom, in caves I hide, what am I?",
-        clues: "Think about sounds in nature. What travels without a physical form?",
-        answer: "echo"
+        title: "The Simon Memory Challenge",
+        description: "Welcome to the ultimate memory test! You must complete 5 consecutive rounds of increasingly difficult patterns to unlock this verse. Each round gets faster and longer. One mistake resets everything. Are you ready for the maximum difficulty Simon challenge?",
+        clues: "Focus intensely on each pattern. The game speeds up with each round (400ms → 200ms). Watch out for the distraction flash after each sequence. You have only 2 seconds to start your input. Pattern lengths: 4 → 6 → 8 → 10 → 12 items.",
+        answer: "COMPLETE"
       },
       {
         orderIndex: 2,
-        title: "The Mathematical Mystery", 
-        description: "I am a three-digit number. My tens digit is the square root of my hundreds digit. My ones digit is half of my tens digit. When you reverse my digits and subtract the result from my original value, you get 297. What number am I?",
-        clues: "Think of perfect squares for the hundreds digit. If hundreds = 9, then tens = 3, ones = 1.5 (not valid). Try hundreds = 4, then tens = 2, ones = 1. Check: 421 - 124 = 297.",
-        answer: "421"
+        title: "The Ancient Symbol Challenge",
+        description: "Welcome to the ancient symbol matching challenge! You must correctly match 10 sacred symbols with their meanings through drag and drop. These symbols represent wisdom from cultures across the world - from the Eastern Yin Yang to the Norse Valknut. Study each symbol carefully and discover their hidden meanings to unlock this verse.",
+        clues: "Drag symbols from the left to their correct meanings on the right. Each symbol represents deep cultural and spiritual concepts: balance, protection, life, healing, and divine wisdom. Pay attention to the visual characteristics of each symbol to help guide your matches. Remember: Yin Yang (balance), Om (sacred sound), Ankh (life), Hamsa (protection), Caduceus (medicine).",
+        answer: "COMPLETE"
       },
       {
         orderIndex: 3,

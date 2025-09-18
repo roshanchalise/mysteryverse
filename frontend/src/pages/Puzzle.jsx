@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { playClickSound } from '../utils/audio';
 import MahjongGame from '../components/MahjongGame';
+import SimonGame from '../components/SimonGame';
+import SymbolMatchingGame from '../components/SymbolMatchingGame';
 
 function Puzzle() {
   const { id } = useParams();
@@ -17,6 +19,8 @@ function Puzzle() {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [currentPuzzleAnswer, setCurrentPuzzleAnswer] = useState(null);
   const mahjongGameRef = useRef(null);
+  const simonGameRef = useRef(null);
+  const symbolMatchingGameRef = useRef(null);
 
   useEffect(() => {
     fetchVerse();
@@ -48,7 +52,39 @@ function Puzzle() {
   const fetchNewPuzzle = async () => {
     try {
       setSubmitting(true);
-      
+
+      if (verse && verse.orderIndex === 1) {
+        // For Simon game, trigger the game's reset function via ref
+        if (simonGameRef.current) {
+          simonGameRef.current.resetGame();
+        }
+        setFeedback('New Simon game started!');
+        setFeedbackType('success');
+
+        // Clear success message after 2 seconds
+        setTimeout(() => {
+          setFeedback('');
+          setFeedbackType('');
+        }, 2000);
+        return;
+      }
+
+      if (verse && verse.orderIndex === 2) {
+        // For Symbol Matching game, trigger the game's reset function via ref
+        if (symbolMatchingGameRef.current) {
+          symbolMatchingGameRef.current.resetGame();
+        }
+        setFeedback('New symbol matching game started!');
+        setFeedbackType('success');
+
+        // Clear success message after 2 seconds
+        setTimeout(() => {
+          setFeedback('');
+          setFeedbackType('');
+        }, 2000);
+        return;
+      }
+
       if (verse && verse.orderIndex === 3) {
         // For Mahjong, trigger the game's reset function via ref
         if (mahjongGameRef.current) {
@@ -56,7 +92,7 @@ function Puzzle() {
         }
         setFeedback('New Mahjong board generated!');
         setFeedbackType('success');
-        
+
         // Clear success message after 2 seconds
         setTimeout(() => {
           setFeedback('');
@@ -178,7 +214,9 @@ function Puzzle() {
     console.log('Game state updated');
   };
 
-  // Check if this is the Mahjong puzzle (verse with orderIndex 3)
+  // Check puzzle types
+  const isSimonPuzzle = verse && verse.orderIndex === 1;
+  const isSymbolMatchingPuzzle = verse && verse.orderIndex === 2;
   const isMahjongPuzzle = verse && verse.orderIndex === 3;
 
   if (loading) {
@@ -245,8 +283,18 @@ function Puzzle() {
               </div>
 
               {/* Interactive Game or Answer Form */}
-              {isMahjongPuzzle ? (
-                <MahjongGame 
+              {isSimonPuzzle ? (
+                <SimonGame
+                  ref={simonGameRef}
+                  onComplete={handleGameComplete}
+                />
+              ) : isSymbolMatchingPuzzle ? (
+                <SymbolMatchingGame
+                  ref={symbolMatchingGameRef}
+                  onComplete={handleGameComplete}
+                />
+              ) : isMahjongPuzzle ? (
+                <MahjongGame
                   ref={mahjongGameRef}
                   onComplete={handleGameComplete}
                   onGameStateChange={handleGameStateChange}

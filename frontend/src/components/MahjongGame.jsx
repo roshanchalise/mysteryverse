@@ -1,17 +1,10 @@
 import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 
-// Themed tiles - All traditional Mahjong characters (visually consistent)
-// Theme: Traditional Mahjong tiles with black/white minimal aesthetic - complex versions
-const THEMED_TILES = [
+// Traditional Mahjong tiles for matching game
+const MAHJONG_TILES = [
   '🀀', '🀁', '🀂', '🀃', '🀅', '🀤', '🀇', '🀈', '🀉', '🀊', '🀋',
   '🀌', '🀍', '🀎', '🀏', '🀐', '🀧', '🀩', '🀥', '🀆', '🀨', '🀦', '🀪'
 ];
-
-// The MISMATCH tile - visually similar but thematically different
-// Complex geometric shape that blends visually but isn't Mahjong
-const MISMATCH_TILE = '◉'; // Complex circle with dot - subtle non-Mahjong mismatch
-
-const MAHJONG_TILES = [...THEMED_TILES, MISMATCH_TILE];
 
 // Version number to track tile configuration changes
 const GAME_VERSION = '2.3'; // Updated when tile configuration changes
@@ -43,6 +36,7 @@ const generateOptimalBoard = () => {
   for (let i = 0; i < MAHJONG_TILES.length; i++) {
     tilePairs.push(MAHJONG_TILES[i], MAHJONG_TILES[i]);
   }
+
 
   // COMPLETELY RANDOM SHUFFLE - No patterns, pure chaos
   shuffleArray(tilePairs);
@@ -121,7 +115,6 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
             message: parsed.message || 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.',
             gameStatus: parsed.gameStatus || 'playing',
             tilesRemaining: parsed.tilesRemaining || 48,
-            mismatchFound: parsed.mismatchFound || false,
             version: GAME_VERSION
           };
         } else {
@@ -135,10 +128,9 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     return {
       board: generateBoard(),
       selectedTiles: [],
-      message: 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.',
+      message: 'Match identical tiles to clear the board. A tile is free if it has an open left OR right side.',
       gameStatus: 'playing',
       tilesRemaining: 48,
-      mismatchFound: false,
       version: GAME_VERSION
     };
   };
@@ -146,10 +138,9 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
   const initialState = loadGameState();
   const [board, setBoard] = useState(initialState.board);
   const [selectedTiles, setSelectedTiles] = useState(initialState.selectedTiles);
-  const [message, setMessage] = useState(initialState.message || 'Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.');
+  const [message, setMessage] = useState(initialState.message || 'Match identical tiles to clear the board. A tile is free if it has an open left OR right side.');
   const [gameStatus, setGameStatus] = useState(initialState.gameStatus);
   const [tilesRemaining, setTilesRemaining] = useState(initialState.tilesRemaining);
-  const [mismatchFound, setMismatchFound] = useState(initialState.mismatchFound || false);
 
   // Save game state to localStorage
   const saveGameState = useCallback(() => {
@@ -160,14 +151,13 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
         message,
         gameStatus,
         tilesRemaining,
-        mismatchFound,
         version: GAME_VERSION
       };
       localStorage.setItem('mahjong-verse3-state', JSON.stringify(gameState));
     } catch (error) {
       console.warn('Failed to save game state:', error);
     }
-  }, [board, selectedTiles, message, gameStatus, tilesRemaining, mismatchFound]);
+  }, [board, selectedTiles, message, gameStatus, tilesRemaining]);
 
   // Convert row/col to coordinate string (A1, B2, etc.)
   const getCoordinateString = (row, col) => {
@@ -322,21 +312,6 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
       const [first, second] = newSelectedTiles;
       
       if (first.tile === second.tile) {
-        // Check if this is the mismatch tile
-        if (first.tile === MISMATCH_TILE && !mismatchFound) {
-          setMismatchFound(true);
-          setMessage(`◉ THEMATIC MISMATCH FOUND! You identified the non-Mahjong symbol! Now you can match traditional tiles freely.`);
-          setSelectedTiles([]);
-          return;
-        }
-
-        // If mismatch not found yet, prevent other matches
-        if (!mismatchFound && first.tile !== MISMATCH_TILE) {
-          setSelectedTiles([]);
-          setMessage(`🚫 Find the thematic mismatch first! Look carefully - one symbol is not a traditional Mahjong character.`);
-          return;
-        }
-
         // Matching tiles - remove them
         const newBoard = board.map(boardRow => [...boardRow]);
         newBoard[first.row][first.col].visible = false;
@@ -368,7 +343,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
 
         setBoard(newBoard);
         setSelectedTiles([]);
-        setMessage(`✅ Match found! Board reshuffled - chaos continues!`);
+        setMessage(`✅ Match found! Tiles removed.`);
 
         setTimeout(() => {
           checkGameState(newBoard);
@@ -390,10 +365,9 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     const newBoard = generateBoard();
     setBoard(newBoard);
     setSelectedTiles([]);
-    setMessage('Find the thematic mismatch! Look carefully - one tile is not a traditional Mahjong character.');
+    setMessage('Match identical tiles to clear the board. A tile is free if it has an open left OR right side.');
     setGameStatus('playing');
     setTilesRemaining(48);
-    setMismatchFound(false);
     onGameStateChange(newBoard);
   };
 
@@ -437,42 +411,53 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
 
       {/* Game Board */}
       <div className="game-board mb-6">
-        {/* Column headers */}
-        <div className="flex mb-2">
-          <div className="w-8"></div>
-          {Array.from({ length: 8 }, (_, i) => (
-            <div key={i} className="w-12 h-8 flex items-center justify-center text-mystery-gold font-bold">
-              {String.fromCharCode(65 + i)}
-            </div>
-          ))}
-        </div>
-        
-        {/* Board rows */}
-        {board.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex mb-1">
-            {/* Row header */}
-            <div className="w-8 h-12 flex items-center justify-center text-mystery-gold font-bold">
-              {rowIndex + 1}
-            </div>
-            
-            {/* Tiles */}
-            {row.map((cell, colIndex) => (
-              <div
-                key={`${rowIndex}-${colIndex}`}
-                className={`w-12 h-12 border border-gray-600 flex items-center justify-center cursor-pointer text-2xl transition-all duration-200 ${
-                  !cell.visible ? 'bg-gray-800 border-gray-700' :
-                  !isTileFree(board, rowIndex, colIndex) ? 'bg-gray-700 opacity-50 cursor-not-allowed' :
-                  isTileSelected(rowIndex, colIndex) ? 'bg-mystery-gold bg-opacity-30 border-mystery-gold' :
-                  'bg-gray-900 hover:bg-gray-700 border-gray-500'
-                }`}
-                onClick={() => handleTileClick(rowIndex, colIndex)}
-                title={cell.visible ? `${getCoordinateString(rowIndex, colIndex)} - ${cell.tile}` : ''}
-              >
-                {cell.visible ? cell.tile : ''}
+        {/* Complete grid structure */}
+        <div className="inline-block">
+          {/* Column headers row */}
+          <div className="flex">
+            <div className="w-12 h-8 flex items-center justify-center"></div>
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="w-12 h-8 flex items-center justify-center text-mystery-gold font-bold border-b border-gray-600">
+                {String.fromCharCode(65 + i)}
               </div>
             ))}
           </div>
-        ))}
+
+          {/* Board rows with row headers */}
+          {board.map((row, rowIndex) => (
+            <div key={rowIndex} className="flex">
+              {/* Row header */}
+              <div className="w-12 h-12 flex items-center justify-center text-mystery-gold font-bold border-r border-gray-600">
+                {rowIndex + 1}
+              </div>
+
+              {/* Tiles */}
+              {row.map((cell, colIndex) => (
+                <div
+                  key={`${rowIndex}-${colIndex}`}
+                  className={`w-12 h-12 border border-gray-600 flex items-center justify-center cursor-pointer text-xl leading-none transition-all duration-200 ${
+                    !cell.visible ? 'bg-gray-800 border-gray-700' :
+                    !isTileFree(board, rowIndex, colIndex) ? 'bg-gray-700 opacity-50 cursor-not-allowed' :
+                    isTileSelected(rowIndex, colIndex) ? 'bg-mystery-gold bg-opacity-30 border-mystery-gold' :
+                    'bg-gray-900 hover:bg-gray-700 border-gray-500'
+                  }`}
+                  onClick={() => handleTileClick(rowIndex, colIndex)}
+                  title={cell.visible ? `${getCoordinateString(rowIndex, colIndex)} - ${cell.tile}` : ''}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center'
+                  }}
+                >
+                  <span style={{ lineHeight: '1', verticalAlign: 'middle' }}>
+                    {cell.visible ? cell.tile : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Game Controls */}
