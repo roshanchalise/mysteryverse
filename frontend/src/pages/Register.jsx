@@ -29,8 +29,6 @@ function Register() {
     setLoading(true);
     setError('');
 
-    console.log('Form data:', formData);
-
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -43,14 +41,10 @@ function Register() {
       return;
     }
 
-    const registrationData = {
+    const result = await register({
       username: formData.username,
       password: formData.password
-    };
-
-    console.log('Sending registration data:', registrationData);
-
-    const result = await register(registrationData);
+    });
     
     if (result.success) {
       // Set flag to indicate user just registered for music auto-start

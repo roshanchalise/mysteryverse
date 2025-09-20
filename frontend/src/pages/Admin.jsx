@@ -43,20 +43,13 @@ function Admin() {
   const fetchData = async (password = storedAdminPassword) => {
     try {
       setLoading(true);
-      console.log('Fetching admin data with password:', password);
-
       const [versesResponse, usersResponse] = await Promise.all([
         axios.post('/api/admin/verses-list', { adminPassword: password }),
         axios.post('/api/admin/users', { adminPassword: password })
       ]);
 
-      console.log('Verses response:', versesResponse.data);
-      console.log('Users response:', usersResponse.data);
-
       setVerses(versesResponse.data.verses);
       setUsers(usersResponse.data.users);
-
-      console.log('Users set to:', usersResponse.data.users);
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
       console.error('Error details:', error.response?.data);
@@ -383,7 +376,6 @@ function Admin() {
         {activeTab === 'users' && (
           <div>
             <h2 className="text-2xl font-semibold mb-6">User Statistics</h2>
-            {console.log('Rendering users tab, activeTab:', activeTab, 'users array:', users, 'users.length:', users.length)}
 
             {users.length === 0 ? (
               <p>No users found</p>

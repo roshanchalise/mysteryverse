@@ -1,11 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
-const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Clear existing data
-  await prisma.user.deleteMany();
   await prisma.verse.deleteMany();
   
   await prisma.verse.createMany({
@@ -41,48 +39,7 @@ async function main() {
     ]
   });
 
-  // Create test users
-  const hashedPassword1 = await bcrypt.hash('password123', 10);
-  const hashedPassword2 = await bcrypt.hash('testpass', 10);
-  const hashedPassword3 = await bcrypt.hash('demo123', 10);
-
-  await prisma.user.createMany({
-    data: [
-      {
-        username: 'player1',
-        password: hashedPassword1,
-        currentVerse: 1
-      },
-      {
-        username: 'alice',
-        password: hashedPassword2,
-        currentVerse: 2
-      },
-      {
-        username: 'bob',
-        password: hashedPassword3,
-        currentVerse: 1
-      },
-      {
-        username: 'charlie',
-        password: hashedPassword1,
-        currentVerse: 3
-      },
-      {
-        username: 'demo_user',
-        password: hashedPassword2,
-        currentVerse: 1
-      }
-    ]
-  });
-
-  console.log('Database seeded successfully with verses and test users!');
-  console.log('Test users created:');
-  console.log('- player1 (password: password123)');
-  console.log('- alice (password: testpass)');
-  console.log('- bob (password: demo123)');
-  console.log('- charlie (password: password123)');
-  console.log('- demo_user (password: testpass)');
+  console.log('Database seeded successfully with verses!');
 }
 
 main()
