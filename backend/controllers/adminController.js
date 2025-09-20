@@ -120,7 +120,6 @@ const getAllUsers = async (req, res) => {
       select: {
         id: true,
         username: true,
-        email: true,
         currentVerse: true,
         createdAt: true
       },

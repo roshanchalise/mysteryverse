@@ -5,6 +5,7 @@ import { playClickSound } from '../utils/audio';
 import MahjongGame from '../components/MahjongGame';
 import SimonGame from '../components/SimonGame';
 import SymbolMatchingGame from '../components/SymbolMatchingGame';
+import UltraHardSymbolGame from '../components/UltraHardSymbolGame';
 
 function Puzzle() {
   const { id } = useParams();
@@ -21,6 +22,7 @@ function Puzzle() {
   const mahjongGameRef = useRef(null);
   const simonGameRef = useRef(null);
   const symbolMatchingGameRef = useRef(null);
+  const ultraHardSymbolGameRef = useRef(null);
 
   useEffect(() => {
     fetchVerse();
@@ -218,6 +220,7 @@ function Puzzle() {
   const isSimonPuzzle = verse && verse.orderIndex === 1;
   const isSymbolMatchingPuzzle = verse && verse.orderIndex === 2;
   const isMahjongPuzzle = verse && verse.orderIndex === 3;
+  const isUltraHardSymbolPuzzle = verse && verse.orderIndex === 4;
 
   if (loading) {
     return (
@@ -298,6 +301,11 @@ function Puzzle() {
                   ref={mahjongGameRef}
                   onComplete={handleGameComplete}
                   onGameStateChange={handleGameStateChange}
+                />
+              ) : isUltraHardSymbolPuzzle ? (
+                <UltraHardSymbolGame
+                  ref={ultraHardSymbolGameRef}
+                  onComplete={handleGameComplete}
                 />
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">

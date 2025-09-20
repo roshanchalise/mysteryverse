@@ -6,7 +6,6 @@ import { playClickSound } from '../utils/audio';
 function Register() {
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
     password: '',
     confirmPassword: ''
   });
@@ -30,6 +29,8 @@ function Register() {
     setLoading(true);
     setError('');
 
+    console.log('Form data:', formData);
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -42,11 +43,14 @@ function Register() {
       return;
     }
 
-    const result = await register({
+    const registrationData = {
       username: formData.username,
-      email: formData.email,
       password: formData.password
-    });
+    };
+
+    console.log('Sending registration data:', registrationData);
+
+    const result = await register(registrationData);
     
     if (result.success) {
       // Set flag to indicate user just registered for music auto-start
@@ -93,22 +97,6 @@ function Register() {
                 placeholder="Choose a username"
                 required
                 minLength="3"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="input-field"
-                placeholder="Enter your email"
-                required
               />
             </div>
 

@@ -57,18 +57,22 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
+      console.log('AuthContext: Registering with data:', userData);
       const response = await axios.post('/api/auth/register', userData);
+      console.log('AuthContext: Registration response:', response.data);
       const { token, user } = response.data;
-      
+
       localStorage.setItem('token', token);
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
-      
+
       return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.response?.data?.error || 'Registration failed' 
+      console.error('AuthContext: Registration error:', error);
+      console.error('AuthContext: Error response:', error.response?.data);
+      return {
+        success: false,
+        error: error.response?.data?.error || 'Registration failed'
       };
     }
   };

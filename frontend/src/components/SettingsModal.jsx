@@ -16,8 +16,7 @@ function SettingsModal({ isOpen, onClose }) {
 
   // Profile settings state
   const [profileForm, setProfileForm] = useState({
-    username: '',
-    email: ''
+    username: ''
   });
 
   // Sound settings state
@@ -47,8 +46,7 @@ function SettingsModal({ isOpen, onClose }) {
       
       setProfile(response.data.user);
       setProfileForm({
-        username: response.data.user.username,
-        email: response.data.user.email
+        username: response.data.user.username
       });
     } catch (error) {
       console.error('Failed to fetch profile:', error);
@@ -219,19 +217,6 @@ function SettingsModal({ isOpen, onClose }) {
                       type="text"
                       value={profileForm.username}
                       onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                      className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-mystery-gold"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-300 text-sm font-medium mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={profileForm.email}
-                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
                       className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-mystery-gold"
                       required
                     />

@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback, forwardRef, useImperativeHandle } fro
 // Traditional Mahjong tiles for matching game
 const MAHJONG_TILES = [
   '🀀', '🀁', '🀂', '🀃', '🀅', '🀤', '🀇', '🀈', '🀉', '🀊', '🀋',
-  '🀌', '🀍', '🀎', '🀏', '🀐', '🀧', '🀩', '🀥', '🀆', '🀨', '🀦', '🀪'
+  '🀌', '🀍', '🀎', '🀏', '🀐', '🀧', '🀩', '🀥', '🀆', '🀨', '🀦', '🀪', '◉'
 ];
 
 // Version number to track tile configuration changes
-const GAME_VERSION = '2.3'; // Updated when tile configuration changes
+const GAME_VERSION = '2.5'; // Force new game generation with circle symbol
 
 // Generate board using guaranteed solvable method
 const generateBoard = () => {
@@ -36,6 +36,10 @@ const generateOptimalBoard = () => {
   for (let i = 0; i < MAHJONG_TILES.length; i++) {
     tilePairs.push(MAHJONG_TILES[i], MAHJONG_TILES[i]);
   }
+
+  // Log to verify circle symbol is included
+  console.log('Tiles include circle:', tilePairs.includes('◉'));
+  console.log('Circle count:', tilePairs.filter(t => t === '◉').length);
 
 
   // COMPLETELY RANDOM SHUFFLE - No patterns, pure chaos
@@ -128,7 +132,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     return {
       board: generateBoard(),
       selectedTiles: [],
-      message: 'Match identical tiles to clear the board. A tile is free if it has an open left OR right side.',
+      message: 'Match identical tiles to clear the board. Find the ◉ circle symbols! A tile is free if it has an open left OR right side.',
       gameStatus: 'playing',
       tilesRemaining: 48,
       version: GAME_VERSION
@@ -138,7 +142,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
   const initialState = loadGameState();
   const [board, setBoard] = useState(initialState.board);
   const [selectedTiles, setSelectedTiles] = useState(initialState.selectedTiles);
-  const [message, setMessage] = useState(initialState.message || 'Match identical tiles to clear the board. A tile is free if it has an open left OR right side.');
+  const [message, setMessage] = useState(initialState.message || 'Match identical tiles to clear the board. Find the ◉ circle symbols! A tile is free if it has an open left OR right side.');
   const [gameStatus, setGameStatus] = useState(initialState.gameStatus);
   const [tilesRemaining, setTilesRemaining] = useState(initialState.tilesRemaining);
 
@@ -362,10 +366,14 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
     // Clear saved game state
     localStorage.removeItem('mahjong-verse3-state');
 
+    // Log available tiles for debugging
+    console.log('Available tiles for new game:', MAHJONG_TILES);
+    console.log('Total unique tiles:', MAHJONG_TILES.length);
+
     const newBoard = generateBoard();
     setBoard(newBoard);
     setSelectedTiles([]);
-    setMessage('Match identical tiles to clear the board. A tile is free if it has an open left OR right side.');
+    setMessage('Match identical tiles to clear the board. Find the ◉ circle symbols! A tile is free if it has an open left OR right side.');
     setGameStatus('playing');
     setTilesRemaining(48);
     onGameStateChange(newBoard);
@@ -436,13 +444,13 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
                 <div
                   key={`${rowIndex}-${colIndex}`}
                   className={`w-12 h-12 border border-gray-600 flex items-center justify-center cursor-pointer text-xl leading-none transition-all duration-200 ${
-                    !cell.visible ? 'bg-gray-800 border-gray-700' :
+                    !cell.visible ? 'bg-green-800 bg-opacity-40 border-green-600 text-green-300 cursor-not-allowed' :
                     !isTileFree(board, rowIndex, colIndex) ? 'bg-gray-700 opacity-50 cursor-not-allowed' :
                     isTileSelected(rowIndex, colIndex) ? 'bg-mystery-gold bg-opacity-30 border-mystery-gold' :
                     'bg-gray-900 hover:bg-gray-700 border-gray-500'
                   }`}
                   onClick={() => handleTileClick(rowIndex, colIndex)}
-                  title={cell.visible ? `${getCoordinateString(rowIndex, colIndex)} - ${cell.tile}` : ''}
+                  title={cell.visible ? `${getCoordinateString(rowIndex, colIndex)} - ${cell.tile}` : `${getCoordinateString(rowIndex, colIndex)} - Cleared`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -451,7 +459,7 @@ const MahjongGame = forwardRef(({ onComplete, onGameStateChange }, ref) => {
                   }}
                 >
                   <span style={{ lineHeight: '1', verticalAlign: 'middle' }}>
-                    {cell.visible ? cell.tile : ''}
+                    {cell.visible ? cell.tile : '✓'}
                   </span>
                 </div>
               ))}

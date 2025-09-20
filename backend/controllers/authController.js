@@ -14,23 +14,18 @@ const generateToken = (userId, username) => {
 
 const register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { username },
-          { email }
-        ]
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { username }
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'Username or email already exists' });
+      return res.status(400).json({ error: 'Username already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,7 +33,6 @@ const register = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         username,
-        email,
         password: hashedPassword
       }
     });
@@ -51,7 +45,6 @@ const register = async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
         currentVerse: user.currentVerse
       }
     });
@@ -91,7 +84,6 @@ const login = async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
         currentVerse: user.currentVerse
       }
     });
@@ -108,7 +100,6 @@ const getProfile = async (req, res) => {
       select: {
         id: true,
         username: true,
-        email: true,
         currentVerse: true,
         createdAt: true
       }
@@ -127,39 +118,33 @@ const getProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const { username } = req.body;
     const userId = req.user.userId;
 
-    if (!username || !email) {
-      return res.status(400).json({ error: 'Username and email are required' });
+    if (!username) {
+      return res.status(400).json({ error: 'Username is required' });
     }
 
-    // Check if username or email already exists for another user
+    // Check if username already exists for another user
     const existingUser = await prisma.user.findFirst({
       where: {
         AND: [
           { NOT: { id: userId } },
-          {
-            OR: [
-              { username },
-              { email }
-            ]
-          }
+          { username }
         ]
       }
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'Username or email already exists' });
+      return res.status(400).json({ error: 'Username already exists' });
     }
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { username, email },
+      data: { username },
       select: {
         id: true,
         username: true,
-        email: true,
         currentVerse: true,
         createdAt: true
       }

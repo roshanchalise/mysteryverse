@@ -1,8 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Clear existing data
+  await prisma.user.deleteMany();
   await prisma.verse.deleteMany();
   
   await prisma.verse.createMany({
@@ -30,15 +33,56 @@ async function main() {
       },
       {
         orderIndex: 4,
-        title: "The Pattern Decoder",
-        description: "Look at this sequence: 2, 6, 12, 20, 30, ?. Each number follows a hidden pattern. Your task is to discover the rule and find the next number in the sequence. Think carefully about the relationship between consecutive numbers and their positions.",
-        clues: "Look at the differences between consecutive numbers: 6-2=4, 12-6=6, 20-12=8, 30-20=10. The differences form an arithmetic sequence: 4, 6, 8, 10... What's the next difference?",
-        answer: "42"
+        title: "The Ultra-Hard Symbol Challenge",
+        description: "Welcome to the ultimate test of focus and perception! You face a 10×10 grid containing 100 symbols that are nearly identical. Your mission: find and click all 25 target symbols hidden among 75 decoys. There are 5 types of symbols (A-E), and you must find all 5 of each type. The challenge? These symbols are 80% identical script letters with distinguishable but subtle differences. This is difficulty level 10/10 - only the most focused minds will succeed!",
+        clues: "Study the symbol guide carefully before starting. Script A Normal: Standard cursive 'a'. Script A Short: Vertically compressed (65% height). Script A Bold: Enhanced boldness with thick text shadow. Script A Slanted: Extra italicized (-18° skew). Script A Compressed: Horizontally squeezed (45% width). Focus on the shape variations, line thickness, and proportions. Find all 5 of each type to clear that set. Clear all 5 sets to win!",
+        answer: "COMPLETE"
       }
     ]
   });
 
-  console.log('Database seeded successfully!');
+  // Create test users
+  const hashedPassword1 = await bcrypt.hash('password123', 10);
+  const hashedPassword2 = await bcrypt.hash('testpass', 10);
+  const hashedPassword3 = await bcrypt.hash('demo123', 10);
+
+  await prisma.user.createMany({
+    data: [
+      {
+        username: 'player1',
+        password: hashedPassword1,
+        currentVerse: 1
+      },
+      {
+        username: 'alice',
+        password: hashedPassword2,
+        currentVerse: 2
+      },
+      {
+        username: 'bob',
+        password: hashedPassword3,
+        currentVerse: 1
+      },
+      {
+        username: 'charlie',
+        password: hashedPassword1,
+        currentVerse: 3
+      },
+      {
+        username: 'demo_user',
+        password: hashedPassword2,
+        currentVerse: 1
+      }
+    ]
+  });
+
+  console.log('Database seeded successfully with verses and test users!');
+  console.log('Test users created:');
+  console.log('- player1 (password: password123)');
+  console.log('- alice (password: testpass)');
+  console.log('- bob (password: demo123)');
+  console.log('- charlie (password: password123)');
+  console.log('- demo_user (password: testpass)');
 }
 
 main()

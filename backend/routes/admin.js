@@ -16,9 +16,11 @@ router.post('/login', (req, res) => {
 
 router.get('/verses', authenticateAdmin, getAllVerses);
 router.post('/verses', authenticateAdmin, createVerse);
+router.post('/verses-list', authenticateAdmin, getAllVerses);
 router.put('/verses/:id', authenticateAdmin, updateVerse);
 router.delete('/verses/:id', authenticateAdmin, deleteVerse);
 
 router.get('/users', authenticateAdmin, getAllUsers);
+router.post('/users', authenticateAdmin, getAllUsers);
 
 module.exports = router;

@@ -6,6 +6,7 @@ import { playClickSound } from '../utils/audio';
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [storedAdminPassword, setStoredAdminPassword] = useState('');
   const [verses, setVerses] = useState([]);
   const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState('verses');
@@ -29,8 +30,9 @@ function Admin() {
       setLoading(true);
       const response = await axios.post('/api/admin/login', { adminPassword });
       setIsAuthenticated(true);
+      setStoredAdminPassword(adminPassword);
       setAdminPassword('');
-      fetchData();
+      fetchData(adminPassword);
     } catch (error) {
       setError('Invalid admin password');
     } finally {
@@ -38,22 +40,26 @@ function Admin() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (password = storedAdminPassword) => {
     try {
       setLoading(true);
+      console.log('Fetching admin data with password:', password);
+
       const [versesResponse, usersResponse] = await Promise.all([
-        axios.get('/api/admin/verses', {
-          data: { adminPassword: process.env.ADMIN_PASSWORD }
-        }),
-        axios.get('/api/admin/users', {
-          data: { adminPassword: process.env.ADMIN_PASSWORD }
-        })
+        axios.post('/api/admin/verses-list', { adminPassword: password }),
+        axios.post('/api/admin/users', { adminPassword: password })
       ]);
+
+      console.log('Verses response:', versesResponse.data);
+      console.log('Users response:', usersResponse.data);
 
       setVerses(versesResponse.data.verses);
       setUsers(usersResponse.data.users);
+
+      console.log('Users set to:', usersResponse.data.users);
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
+      console.error('Error details:', error.response?.data);
       setError('Failed to load admin data');
     } finally {
       setLoading(false);
@@ -377,14 +383,17 @@ function Admin() {
         {activeTab === 'users' && (
           <div>
             <h2 className="text-2xl font-semibold mb-6">User Statistics</h2>
-            
-            <div className="grid gap-4">
-              {users.map((user) => (
+            {console.log('Rendering users tab, activeTab:', activeTab, 'users array:', users, 'users.length:', users.length)}
+
+            {users.length === 0 ? (
+              <p>No users found</p>
+            ) : (
+              <div className="grid gap-4">
+                {users.map((user) => (
                 <div key={user.id} className="card">
                   <div className="flex justify-between items-center">
                     <div>
                       <h3 className="text-lg font-semibold">{user.username}</h3>
-                      <p className="text-gray-300 text-sm">{user.email}</p>
                       <p className="text-mystery-gold text-sm">
                         Current Verse: {user.currentVerse}
                       </p>
@@ -395,7 +404,8 @@ function Admin() {
                   </div>
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>

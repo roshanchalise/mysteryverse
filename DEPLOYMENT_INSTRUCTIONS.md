@@ -210,3 +210,34 @@ If you encounter issues:
 ---
 
 **Success!** Your Mystery Verse application should now be live and accessible to users worldwide! 🎉
+
+⏺ Since you're in a non-interactive environment, you can manually link using your project ID. First, let me show you the Railway
+   commands you need:
+
+  # Navigate to your backend directory
+  cd "/Users/roshanchalise/Downloads/mystery verse/mystery-verse/backend"
+
+  # Link to your existing Railway project (you'll need to select it)
+  railway link
+
+  # Or if you know your project ID:
+  railway link [PROJECT_ID]
+
+  # Then run the database commands:
+  railway run npm run db:generate
+  railway run npm run db:push
+  railway run npm run db:seed
+
+  Alternative approach:
+  You can also run these commands directly in the Railway dashboard:
+  1. Go to your Railway project dashboard
+  2. Click on your backend service
+  3. Go to the "Deploy" tab
+  4. Run these commands in the Railway console
+
+  To find your project:
+  - Go to https://railway.app
+  - Look for your mystery-verse project
+  - Copy the project ID from the URL or settings
+
+  Would you like me to help you identify which Railway project to link to?
