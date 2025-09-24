@@ -132,4 +132,28 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers };
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = parseInt(id);
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId }
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await prisma.user.delete({
+      where: { id: userId }
+    });
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser };

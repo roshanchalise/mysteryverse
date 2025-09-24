@@ -24,21 +24,6 @@ function Puzzle() {
     fetchVerse();
   }, [id]);
 
-  // Cleanup audio when component unmounts or verse changes
-  useEffect(() => {
-    return () => {
-      // Pause and reset audio when leaving the component
-      if (punchAudioRef.current) {
-        punchAudioRef.current.pause();
-        punchAudioRef.current.currentTime = 0;
-      }
-      if (fishingAudioRef.current) {
-        fishingAudioRef.current.pause();
-        fishingAudioRef.current.currentTime = 0;
-      }
-    };
-  }, [id]); // Re-run when verse ID changes
-
   const fetchVerse = async () => {
     try {
       setLoading(true);
@@ -52,12 +37,6 @@ function Puzzle() {
         const storedAnswer = localStorage.getItem(`verse-${verseData.orderIndex}-answer`);
         if (storedAnswer) {
           setAnswer(storedAnswer);
-        }
-
-        // Show completion message for solved verse 1
-        if (verseData.orderIndex === 1) {
-          setFeedback("A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'");
-          setFeedbackType('success');
         }
       } else {
         // Clear answer field for unsolved verses
@@ -80,10 +59,11 @@ function Puzzle() {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!answer.trim()) return;
-
+    
     // Form submission - global handler will play click sound
 
     try {
@@ -128,6 +108,7 @@ function Puzzle() {
       setSubmitting(false);
     }
   };
+
 
   // Handle congratulations modal close
   const handleCongratulationsClose = () => {
@@ -194,7 +175,7 @@ function Puzzle() {
               <h2 className="text-3xl font-bold mb-6 text-center font-title">
                 {verse.title}
               </h2>
-
+              
               <div className="prose prose-invert max-w-none mb-6">
                 <p className="text-lg leading-relaxed whitespace-pre-line">
                   {verse.description}
@@ -278,7 +259,7 @@ function Puzzle() {
 
                     {feedback && (
                       <div className={`text-center p-3 rounded-md ${
-                        feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('wave of understanding') || feedback.includes('PUNCHLINE')
+                        feedback.includes('Correct') || feedback.includes('already solved')
                           ? 'bg-green-900/50 text-green-300'
                           : 'bg-red-900/50 text-red-300'
                       }`}>
@@ -296,10 +277,53 @@ function Puzzle() {
                       </button>
                     )}
 
+                    {/* Play Again Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Reset game state for verse 4
+                        setAnswer('');
+                        setFeedback('');
+                        setFeedbackType('');
+                        setGameCompleted(false);
+                        setShowCongratulations(false);
+
+                        // Clear any saved answer for this verse
+                        localStorage.removeItem(`verse-${verse.orderIndex}-answer`);
+
+                        // Optionally reset audio to beginning
+                        if (punchAudioRef.current) {
+                          punchAudioRef.current.pause();
+                          punchAudioRef.current.currentTime = 0;
+                        }
+                        if (fishingAudioRef.current) {
+                          fishingAudioRef.current.pause();
+                          fishingAudioRef.current.currentTime = 0;
+                        }
+                      }}
+                      className="w-full btn btn-secondary mt-4"
+                    >
+                      🔄 Play Again
+                    </button>
                   </form>
                 </div>
               )}
 
+              {/* Feedback */}
+              {feedback && (
+                <div className={`mt-4 p-4 rounded-lg border ${
+                  feedbackType === 'success'
+                    ? 'bg-green-500 bg-opacity-20 border-green-500 text-green-200'
+                    : 'bg-red-500 bg-opacity-20 border-red-500 text-red-200'
+                }`}>
+                  <div className="flex items-center">
+                    <span className="text-xl mr-2">
+                      {feedbackType === 'success' ? '🎉' : '❌'}
+                    </span>
+                    {feedback}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

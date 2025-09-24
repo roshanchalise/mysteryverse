@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import ProgressBar from '../components/ProgressBar';
 import VerseCard from '../components/VerseCard';
@@ -10,6 +10,7 @@ function Dashboard() {
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
     fetchData();
@@ -79,6 +80,47 @@ function Dashboard() {
     };
   }, []);
 
+  // Refresh data when returning from a puzzle (location change)
+  useEffect(() => {
+    // Only refetch if we're not in the initial load
+    if (!loading) {
+      fetchData();
+    }
+  }, [location.pathname]);
+
+  // Refresh data when returning from completing a verse
+  useEffect(() => {
+    if (location.state?.refreshProgress) {
+      fetchData();
+      // Clear the state to prevent repeated refreshes
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
+  // Check for progress updates on dashboard focus/load
+  useEffect(() => {
+    const checkProgressUpdate = () => {
+      const lastUpdate = sessionStorage.getItem('mysteryverse-progress-updated');
+      const lastCheck = sessionStorage.getItem('mysteryverse-progress-checked');
+
+      if (lastUpdate && lastUpdate !== lastCheck) {
+        fetchData();
+        sessionStorage.setItem('mysteryverse-progress-checked', lastUpdate);
+      }
+    };
+
+    // Check immediately
+    checkProgressUpdate();
+
+    // Check when window gains focus (user returns from another tab)
+    const handleFocus = () => checkProgressUpdate();
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -122,8 +164,6 @@ function Dashboard() {
     );
   }
 
-  const currentVerse = verses.find(v => !v.isSolved && v.isUnlocked);
-
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-6xl mx-auto">
@@ -133,7 +173,7 @@ function Dashboard() {
             Your Journey
           </h1>
           <p className="text-gray-300 text-lg">
-            Unravel the mysteries, one verse at a time
+            Explore all mysteries at your own pace
           </p>
         </div>
 
@@ -141,32 +181,33 @@ function Dashboard() {
         {progress && (
           <div className="card mb-8 max-w-2xl mx-auto">
             <h2 className="text-2xl font-semibold mb-6 text-center">Progress Overview</h2>
-            <ProgressBar 
+            <ProgressBar
               progress={progress.progressPercentage}
               currentVerse={progress.currentVerse}
               totalVerses={progress.totalVerses}
+              solvedVerses={progress.solvedVerses}
             />
-            
-            {progress.progressPercentage === 100 ? (
-              <div className="mt-6 text-center">
-                <div className="text-4xl mb-2">🎉</div>
-                <p className="text-mystery-gold font-semibold">
-                  Congratulations! You've completed all verses!
+
+            {progress.solvedVerses === progress.totalVerses ? (
+              <div className="mt-6 text-center bg-gradient-to-r from-mystery-gold/20 to-mystery-gold/10 rounded-lg p-6 border border-mystery-gold/30">
+                <div className="text-6xl mb-4 animate-bounce">🎉</div>
+                <h2 className="text-3xl font-bold text-mystery-gold mb-3 font-title">
+                  VICTORY ACHIEVED!
+                </h2>
+                <p className="text-mystery-gold font-semibold text-lg mb-2">
+                  Congratulations, Puzzle Master!
+                </p>
+                <p className="text-gray-300 text-sm">
+                  You have successfully completed all verses of the Mystery Verse!<br/>
+                  Your wit, persistence, and skill have unlocked every secret.<br/>
+                  You are truly a master of puzzles and riddles!
                 </p>
               </div>
-            ) : currentVerse && (
+            ) : (
               <div className="mt-6 text-center">
-                <p className="text-gray-300 mb-3">Currently working on:</p>
-                <p className="text-mystery-gold font-semibold text-lg">
-                  {currentVerse.title}
+                <p className="text-gray-300 mb-3">
+                  All verses are available - choose any to begin or continue!
                 </p>
-                <Link 
-                  to={`/verse/${currentVerse.id}`}
-                  className="btn-primary mt-3 inline-block"
-                  onClick={() => {}}
-                >
-                  Continue Puzzle
-                </Link>
               </div>
             )}
           </div>

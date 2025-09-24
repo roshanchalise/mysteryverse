@@ -15,11 +15,11 @@ function VerseCard({ verse }) {
           {isSolved ? (
             <span className="flex items-center text-green-400 text-sm">
               <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-              Solved
+              Completed
             </span>
           ) : isUnlocked ? (
-            <span className="flex items-center text-mystery-gold text-sm">
-              <span className="w-2 h-2 bg-mystery-gold rounded-full mr-2 animate-pulse"></span>
+            <span className="flex items-center text-yellow-400 text-sm">
+              <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2 animate-pulse"></span>
               Available
             </span>
           ) : (

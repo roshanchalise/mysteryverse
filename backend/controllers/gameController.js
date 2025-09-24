@@ -73,6 +73,10 @@ const getVerses = async (req, res) => {
       where: { id: req.user.userId }
     });
 
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const verses = await prisma.verse.findMany({
       where: { isActive: true },
       orderBy: { orderIndex: 'asc' },
@@ -83,10 +87,19 @@ const getVerses = async (req, res) => {
       }
     });
 
+    // Parse completed verses array
+    let completedVerses = [];
+    try {
+      completedVerses = JSON.parse(user.completedVerses || '[]');
+    } catch (error) {
+      console.error('Error parsing completedVerses:', error);
+      completedVerses = [];
+    }
+
     const versesWithStatus = verses.map(verse => ({
       ...verse,
-      isUnlocked: verse.orderIndex <= user.currentVerse,
-      isSolved: verse.orderIndex < user.currentVerse
+      isUnlocked: true, // All verses are now unlocked
+      isSolved: completedVerses.includes(verse.orderIndex) // Check if verse is completed
     }));
 
     res.json({ verses: versesWithStatus, currentVerse: user.currentVerse });
@@ -113,8 +126,15 @@ const getVerse = async (req, res) => {
       return res.status(404).json({ error: 'Verse not found' });
     }
 
-    if (verse.orderIndex > user.currentVerse) {
-      return res.status(403).json({ error: 'Verse not unlocked yet' });
+    // All verses are now accessible - no unlock restriction
+
+    // Parse completed verses array
+    let completedVerses = [];
+    try {
+      completedVerses = JSON.parse(user.completedVerses || '[]');
+    } catch (error) {
+      console.error('Error parsing completedVerses:', error);
+      completedVerses = [];
     }
 
     const verseData = {
@@ -123,8 +143,8 @@ const getVerse = async (req, res) => {
       description: verse.description,
       clues: verse.clues,
       orderIndex: verse.orderIndex,
-      isUnlocked: verse.orderIndex <= user.currentVerse,
-      isSolved: verse.orderIndex < user.currentVerse
+      isUnlocked: true, // All verses are unlocked
+      isSolved: completedVerses.includes(verse.orderIndex) // Check if verse is completed
     };
 
     res.json({ verse: verseData });
@@ -156,40 +176,72 @@ const submitAnswer = async (req, res) => {
       return res.status(404).json({ error: 'Verse not found' });
     }
 
-    if (verse.orderIndex > user.currentVerse) {
-      return res.status(403).json({ error: 'Verse not unlocked yet' });
-    }
-
-    if (verse.orderIndex < user.currentVerse) {
-      return res.json({ 
-        correct: true, 
-        message: 'You have already solved this verse!',
-        alreadySolved: true 
-      });
-    }
+    // All verses are accessible - no early return needed since we handle already solved verses below
 
     // Use current puzzle answer if provided (for dynamic puzzles), otherwise use original verse answer
     const correctAnswer = currentPuzzleAnswer || verse.answer;
     const isCorrect = answer.toLowerCase().trim() === correctAnswer.toLowerCase().trim();
 
     if (isCorrect) {
-      await prisma.user.update({
-        where: { id: req.user.userId },
-        data: { currentVerse: user.currentVerse + 1 }
-      });
+      // Parse completed verses array
+      let completedVerses = [];
+      try {
+        completedVerses = JSON.parse(user.completedVerses || '[]');
+      } catch (error) {
+        console.error('Error parsing completedVerses:', error);
+        completedVerses = [];
+      }
+
+      // Check if this verse was already completed
+      const wasAlreadySolved = completedVerses.includes(verse.orderIndex);
+
+      // Add verse to completed list if not already completed
+      if (!wasAlreadySolved) {
+        completedVerses.push(verse.orderIndex);
+
+        // Update database with new completion
+        await prisma.user.update({
+          where: { id: req.user.userId },
+          data: {
+            completedVerses: JSON.stringify(completedVerses),
+            // Keep currentVerse for sequential progression tracking if needed
+            currentVerse: verse.orderIndex === user.currentVerse ? user.currentVerse + 1 : user.currentVerse
+          }
+        });
+      }
 
       const totalVerses = await prisma.verse.count({ where: { isActive: true } });
-      const isGameComplete = user.currentVerse >= totalVerses;
+      const isGameComplete = completedVerses.length >= totalVerses;
 
-      res.json({ 
-        correct: true, 
-        message: isGameComplete ? 'Congratulations! You have completed all verses!' : 'Correct! Next verse unlocked!',
-        gameComplete: isGameComplete
+      // Custom success message for verse 1 (The Humor Helix)
+      let successMessage;
+      if (wasAlreadySolved) {
+        successMessage = 'You have already solved this verse!';
+      } else if (verse.orderIndex === 1) {
+        if (isGameComplete) {
+          successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!' 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉";
+        } else {
+          successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'";
+        }
+      } else {
+        successMessage = isGameComplete ? 'Congratulations! You have completed all verses!' : 'Correct! Next verse unlocked!';
+      }
+
+      res.json({
+        correct: true,
+        message: successMessage,
+        gameComplete: isGameComplete,
+        alreadySolved: wasAlreadySolved
       });
     } else {
-      res.json({ 
-        correct: false, 
-        message: 'Incorrect answer. Try again!' 
+      // Custom message for verse 1 (The Humor Helix)
+      const incorrectMessage = verse.orderIndex === 1
+        ? "Arthur furrows his brow. 'Hmm, that doesn't quite feel right. Perhaps I'm missing something...'"
+        : 'Incorrect answer. Try again!';
+
+      res.json({
+        correct: false,
+        message: incorrectMessage
       });
     }
   } catch (error) {
@@ -204,15 +256,30 @@ const getProgress = async (req, res) => {
       where: { id: req.user.userId }
     });
 
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const totalVerses = await prisma.verse.count({ where: { isActive: true } });
-    const solvedVerses = user.currentVerse - 1;
+
+    // Progress is based on individual verse completions
+    let completedVerses = [];
+    try {
+      completedVerses = JSON.parse(user.completedVerses || '[]');
+    } catch (error) {
+      console.error('Error parsing completedVerses:', error);
+      completedVerses = [];
+    }
+
+    const solvedVerses = completedVerses.length;
     const progressPercentage = Math.round((solvedVerses / totalVerses) * 100);
 
     res.json({
       currentVerse: user.currentVerse,
       solvedVerses,
       totalVerses,
-      progressPercentage
+      progressPercentage,
+      completedVerses
     });
   } catch (error) {
     console.error('Get progress error:', error);
@@ -224,12 +291,16 @@ const resetProgress = async (req, res) => {
   try {
     await prisma.user.update({
       where: { id: req.user.userId },
-      data: { currentVerse: 1 }
+      data: {
+        currentVerse: 1,
+        completedVerses: '[]'
+      }
     });
 
     res.json({
       message: 'Progress reset successfully',
-      currentVerse: 1
+      currentVerse: 1,
+      completedVerses: []
     });
   } catch (error) {
     console.error('Reset progress error:', error);
@@ -254,26 +325,22 @@ const getNewPuzzle = async (req, res) => {
       return res.status(404).json({ error: 'Verse not found' });
     }
 
-    if (verse.orderIndex > user.currentVerse) {
-      return res.status(403).json({ error: 'Verse not unlocked yet' });
+    // All verses are accessible - no unlock restriction
+
+    // Parse completed verses array
+    let completedVerses = [];
+    try {
+      completedVerses = JSON.parse(user.completedVerses || '[]');
+    } catch (error) {
+      console.error('Error parsing completedVerses:', error);
+      completedVerses = [];
     }
 
     let newPuzzle;
     
     // Generate new puzzle based on verse type
-    if (verse.orderIndex === 1) {
-      newPuzzle = generateRiddle();
-    } else if (verse.orderIndex === 2) {
-      newPuzzle = generateMathPuzzle();
-    } else if (verse.orderIndex === 3) {
-      // Mahjong game generates its own new board, just return success
-      return res.json({ 
-        success: true, 
-        message: 'New Mahjong board generated' 
-      });
-    } else {
-      return res.status(400).json({ error: 'New puzzle generation not available for this verse' });
-    }
+    // Note: Verse 1 (The Humor Helix) is a fixed puzzle, so new puzzle generation is not available
+    return res.status(400).json({ error: 'New puzzle generation not available for this verse' });
 
     const verseData = {
       id: verse.id,
@@ -281,8 +348,8 @@ const getNewPuzzle = async (req, res) => {
       description: newPuzzle.description,
       clues: newPuzzle.clues,
       orderIndex: verse.orderIndex,
-      isUnlocked: verse.orderIndex <= user.currentVerse,
-      isSolved: verse.orderIndex < user.currentVerse,
+      isUnlocked: true, // All verses are unlocked
+      isSolved: completedVerses.includes(verse.orderIndex), // Check if verse is completed
       answer: newPuzzle.answer // This will be used internally for answer checking
     };
 

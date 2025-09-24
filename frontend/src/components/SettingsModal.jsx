@@ -121,14 +121,10 @@ function SettingsModal({ isOpen, onClose }) {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setSuccess('Progress reset successfully! Refresh the page to see changes.');
+      setSuccess('Progress reset successfully! You can now start fresh with any verse you choose. Close this modal when you\'re ready to continue.');
       setShowResetConfirm(false);
       setResetConfirmText('');
-      setTimeout(() => {
-        setSuccess('');
-        onClose();
-        window.location.reload();
-      }, 2000);
+      // Don't auto-close the modal - let the user close it manually
     } catch (error) {
       console.error('Failed to reset progress:', error);
       setError('Failed to reset progress. Please try again.');

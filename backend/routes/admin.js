@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers } = require('../controllers/adminController');
+const { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser } = require('../controllers/adminController');
 const { authenticateAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -22,5 +22,6 @@ router.delete('/verses/:id', authenticateAdmin, deleteVerse);
 
 router.get('/users', authenticateAdmin, getAllUsers);
 router.post('/users', authenticateAdmin, getAllUsers);
+router.delete('/users/:id', authenticateAdmin, deleteUser);
 
 module.exports = router;
