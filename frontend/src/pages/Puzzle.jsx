@@ -317,7 +317,6 @@ function Puzzle() {
                           className="w-full h-48 object-contain rounded"
                         />
                       </div>
-                      <p className="text-center text-sm text-gray-400 mt-2">A dusty DVD player with "NO DISC" error and disc ejected</p>
                     </div>
 
                     {/* Smart TV Image Section */}
@@ -330,7 +329,6 @@ function Puzzle() {
                           className="w-full h-48 object-contain rounded"
                         />
                       </div>
-                      <p className="text-center text-sm text-gray-400 mt-2">Modern smart TV displaying streaming interface</p>
                     </div>
                   </div>
 
