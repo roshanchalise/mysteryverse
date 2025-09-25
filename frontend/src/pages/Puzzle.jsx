@@ -54,9 +54,12 @@ function Puzzle() {
           setAnswer(storedAnswer);
         }
 
-        // Show completion message for solved verse 1
+        // Show completion message for solved verses
         if (verseData.orderIndex === 1) {
           setFeedback("A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'");
+          setFeedbackType('success');
+        } else if (verseData.orderIndex === 2) {
+          setFeedback("That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade!");
           setFeedbackType('success');
         }
       } else {
@@ -137,6 +140,7 @@ function Puzzle() {
 
   // Check puzzle types
   const isHumorHelixPuzzle = verse && verse.orderIndex === 1;
+  const isAnalogSunsetPuzzle = verse && verse.orderIndex === 2;
 
   if (loading) {
     return (
@@ -229,7 +233,6 @@ function Puzzle() {
                           className="w-full h-48 object-contain rounded"
                         />
                       </div>
-                      <p className="text-center text-sm text-gray-400 mt-2">A dusty old boxing glove (click to play/pause)</p>
                     </div>
 
                     {/* Fishing Scene Image Section */}
@@ -255,7 +258,6 @@ function Puzzle() {
                           className="w-full h-48 object-contain rounded"
                         />
                       </div>
-                      <p className="text-center text-sm text-gray-400 mt-2">A peaceful fishing scene (click to play/pause)</p>
                     </div>
                   </div>
 
@@ -279,6 +281,79 @@ function Puzzle() {
                     {feedback && (
                       <div className={`text-center p-3 rounded-md ${
                         feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('wave of understanding') || feedback.includes('PUNCHLINE')
+                          ? 'bg-green-900/50 text-green-300'
+                          : 'bg-red-900/50 text-red-300'
+                      }`}>
+                        {feedback}
+                      </div>
+                    )}
+
+                    {!verse.isSolved && (
+                      <button
+                        type="submit"
+                        disabled={submitting || !answer.trim()}
+                        className="w-full btn btn-primary"
+                      >
+                        {submitting ? 'Checking...' : 'Submit Answer'}
+                      </button>
+                    )}
+
+                  </form>
+                </div>
+              )}
+
+              {/* The Analog Sunset Puzzle */}
+              {isAnalogSunsetPuzzle && (
+                <div className="space-y-6">
+                  {/* Two Image Sections */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* DVD Player Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 1</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 2/dvd_player.jpeg"
+                          alt="Dusty DVD Player with NO DISC error"
+                          className="w-full h-48 object-contain rounded"
+                        />
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mt-2">A dusty DVD player with "NO DISC" error and disc ejected</p>
+                    </div>
+
+                    {/* Smart TV Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 2</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 2/smart_tv.jpeg"
+                          alt="Smart TV displaying YouTube interface"
+                          className="w-full h-48 object-contain rounded"
+                        />
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mt-2">Modern smart TV displaying streaming interface</p>
+                    </div>
+                  </div>
+
+                  {/* Answer Form */}
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label htmlFor="answer" className="block text-sm font-medium mb-2">
+                        Your Answer
+                      </label>
+                      <input
+                        type="text"
+                        id="answer"
+                        value={answer}
+                        onChange={(e) => setAnswer(e.target.value)}
+                        className="input-field w-full"
+                        placeholder="Enter your answer..."
+                        disabled={submitting || verse.isSolved}
+                      />
+                    </div>
+
+                    {feedback && (
+                      <div className={`text-center p-3 rounded-md ${
+                        feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('STREAM')
                           ? 'bg-green-900/50 text-green-300'
                           : 'bg-red-900/50 text-red-300'
                       }`}>
