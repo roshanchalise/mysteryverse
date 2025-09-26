@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../config/api';
 import { playClickSound } from '../utils/audio';
 import CongratulationsModal from '../components/CongratulationsModal';
 
@@ -42,7 +42,7 @@ function Puzzle() {
   const fetchVerse = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/game/verse/${id}`);
+      const response = await api.get(`/api/game/verse/${id}`);
       const verseData = response.data.verse;
       setVerse(verseData);
       setCurrentPuzzleAnswer(verseData.answer);
@@ -94,7 +94,7 @@ function Puzzle() {
 
     try {
       setSubmitting(true);
-      const response = await axios.post(`/api/game/verse/${id}/submit`, {
+      const response = await api.post(`/api/game/verse/${id}/submit`, {
         answer: answer.trim(),
         currentPuzzleAnswer: currentPuzzleAnswer
       });
