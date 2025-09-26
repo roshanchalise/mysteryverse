@@ -46,7 +46,8 @@
       "Bash(gh repo create:*)",
       "Bash(git pull:*)",
       "Bash(git checkout:*)",
-      "Bash(gh run list:*)"
+      "Bash(gh run list:*)",
+      "WebFetch(domain:www.mysterypioneer.com)"
     ],
     "deny": [],
     "ask": []
