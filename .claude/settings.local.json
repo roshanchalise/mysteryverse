@@ -45,7 +45,8 @@
       "Bash(railway login:*)",
       "Bash(gh repo create:*)",
       "Bash(git pull:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(gh run list:*)"
     ],
     "deny": [],
     "ask": []
