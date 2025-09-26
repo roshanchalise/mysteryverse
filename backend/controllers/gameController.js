@@ -213,7 +213,7 @@ const submitAnswer = async (req, res) => {
       const totalVerses = await prisma.verse.count({ where: { isActive: true } });
       const isGameComplete = completedVerses.length >= totalVerses;
 
-      // Custom success message for verse 1 (The Humor Helix)
+      // Custom success messages for different verses
       let successMessage;
       if (wasAlreadySolved) {
         successMessage = 'You have already solved this verse!';
@@ -223,6 +223,10 @@ const submitAnswer = async (req, res) => {
         } else {
           successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'";
         }
+      } else if (verse.orderIndex === 2) {
+        successMessage = isGameComplete ? "That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade! 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉" : "That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade!";
+      } else if (verse.orderIndex === 3) {
+        successMessage = isGameComplete ? "The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated. 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉" : "The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated.";
       } else {
         successMessage = isGameComplete ? 'Congratulations! You have completed all verses!' : 'Correct! Next verse unlocked!';
       }
@@ -234,10 +238,17 @@ const submitAnswer = async (req, res) => {
         alreadySolved: wasAlreadySolved
       });
     } else {
-      // Custom message for verse 1 (The Humor Helix)
-      const incorrectMessage = verse.orderIndex === 1
-        ? "Arthur furrows his brow. 'Hmm, that doesn't quite feel right. Perhaps I'm missing something...'"
-        : 'Incorrect answer. Try again!';
+      // Custom incorrect messages for different verses
+      let incorrectMessage;
+      if (verse.orderIndex === 1) {
+        incorrectMessage = "Arthur furrows his brow. 'Hmm, that doesn't quite feel right. Perhaps I'm missing something...'";
+      } else if (verse.orderIndex === 2) {
+        incorrectMessage = "Leo scratches his head. 'That doesn't seem right. There must be a way to bridge this gap between old and new...'";
+      } else if (verse.orderIndex === 3) {
+        incorrectMessage = "The weight is great, but it need not be yours alone. Look again at the symbols. How can two separate circles hold something in common? How is a burden lessened?";
+      } else {
+        incorrectMessage = 'Incorrect answer. Try again!';
+      }
 
       res.json({
         correct: false,

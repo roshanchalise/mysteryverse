@@ -61,6 +61,9 @@ function Puzzle() {
         } else if (verseData.orderIndex === 2) {
           setFeedback("That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade!");
           setFeedbackType('success');
+        } else if (verseData.orderIndex === 3) {
+          setFeedback("The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated.");
+          setFeedbackType('success');
         }
       } else {
         // Clear answer field for unsolved verses
@@ -141,6 +144,7 @@ function Puzzle() {
   // Check puzzle types
   const isHumorHelixPuzzle = verse && verse.orderIndex === 1;
   const isAnalogSunsetPuzzle = verse && verse.orderIndex === 2;
+  const isTitanGiftPuzzle = verse && verse.orderIndex === 3;
 
   if (loading) {
     return (
@@ -264,18 +268,43 @@ function Puzzle() {
                   {/* Answer Form */}
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <label htmlFor="answer" className="block text-sm font-medium mb-2">
+                      <label className="block text-sm font-medium mb-2">
                         Your Answer
                       </label>
-                      <input
-                        type="text"
-                        id="answer"
-                        value={answer}
-                        onChange={(e) => setAnswer(e.target.value)}
-                        className="input-field w-full"
-                        placeholder="Enter your answer..."
-                        disabled={submitting || verse.isSolved}
-                      />
+                      <div className="flex justify-center gap-2 mb-4">
+                        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            value={answer[index] || ''}
+                            onChange={(e) => {
+                              const newAnswer = answer.split('');
+                              newAnswer[index] = e.target.value.toUpperCase();
+                              const updatedAnswer = newAnswer.join('').slice(0, 9);
+                              setAnswer(updatedAnswer);
+
+                              // Auto-focus next input if current is filled
+                              if (e.target.value && index < 8) {
+                                const nextInput = e.target.parentElement.children[index + 1];
+                                if (nextInput) nextInput.focus();
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              // Handle backspace to go to previous input
+                              if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                const prevInput = e.target.parentElement.children[index - 1];
+                                if (prevInput) prevInput.focus();
+                              }
+                            }}
+                            className="w-12 h-12 text-center text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
+                            disabled={submitting || verse.isSolved}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mb-2">
+                        What's the key to perfect comedy timing?
+                      </p>
                     </div>
 
                     {feedback && (
@@ -335,23 +364,144 @@ function Puzzle() {
                   {/* Answer Form */}
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <label htmlFor="answer" className="block text-sm font-medium mb-2">
+                      <label className="block text-sm font-medium mb-2">
                         Your Answer
                       </label>
-                      <input
-                        type="text"
-                        id="answer"
-                        value={answer}
-                        onChange={(e) => setAnswer(e.target.value)}
-                        className="input-field w-full"
-                        placeholder="Enter your answer..."
-                        disabled={submitting || verse.isSolved}
-                      />
+                      <div className="flex justify-center gap-2 mb-4">
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            value={answer[index] || ''}
+                            onChange={(e) => {
+                              const newAnswer = answer.split('');
+                              newAnswer[index] = e.target.value.toUpperCase();
+                              const updatedAnswer = newAnswer.join('').slice(0, 6);
+                              setAnswer(updatedAnswer);
+
+                              // Auto-focus next input if current is filled
+                              if (e.target.value && index < 5) {
+                                const nextInput = e.target.parentElement.children[index + 1];
+                                if (nextInput) nextInput.focus();
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              // Handle backspace to go to previous input
+                              if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                const prevInput = e.target.parentElement.children[index - 1];
+                                if (prevInput) prevInput.focus();
+                              }
+                            }}
+                            className="w-12 h-12 text-center text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
+                            disabled={submitting || verse.isSolved}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mb-2">
+                        How do we bridge the gap between old and new technology?
+                      </p>
                     </div>
 
                     {feedback && (
                       <div className={`text-center p-3 rounded-md ${
                         feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('STREAM')
+                          ? 'bg-green-900/50 text-green-300'
+                          : 'bg-red-900/50 text-red-300'
+                      }`}>
+                        {feedback}
+                      </div>
+                    )}
+
+                    {!verse.isSolved && (
+                      <button
+                        type="submit"
+                        disabled={submitting || !answer.trim()}
+                        className="w-full btn btn-primary"
+                      >
+                        {submitting ? 'Checking...' : 'Submit Answer'}
+                      </button>
+                    )}
+
+                  </form>
+                </div>
+              )}
+
+              {/* The Titan's Gift Puzzle */}
+              {isTitanGiftPuzzle && (
+                <div className="space-y-6">
+                  {/* Two Image Sections */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Atlas Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 1</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 3/atlas_statue.jpg"
+                          alt="Titan Atlas holding the celestial sphere - representing an immense burden carried alone"
+                          className="w-full h-48 object-cover rounded"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Venn Diagram Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 2</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 3/venn_diagram_common_ground.jpg"
+                          alt="Venn diagram showing Common Ground - representing shared space and connection"
+                          className="w-full h-48 object-cover rounded"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Answer Form */}
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Your Answer
+                      </label>
+                      <div className="flex justify-center gap-2 mb-4">
+                        {[0, 1, 2, 3, 4].map((index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            value={answer[index] || ''}
+                            onChange={(e) => {
+                              const newAnswer = answer.split('');
+                              newAnswer[index] = e.target.value.toUpperCase();
+                              const updatedAnswer = newAnswer.join('').slice(0, 5);
+                              setAnswer(updatedAnswer);
+
+                              // Auto-focus next input if current is filled
+                              if (e.target.value && index < 4) {
+                                const nextInput = e.target.parentElement.children[index + 1];
+                                if (nextInput) nextInput.focus();
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              // Handle backspace to go to previous input
+                              if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                const prevInput = e.target.parentElement.children[index - 1];
+                                if (prevInput) prevInput.focus();
+                              }
+                            }}
+                            className="w-12 h-12 text-center text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
+                            disabled={submitting || verse.isSolved}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mb-2">
+                        What single word unlocks the secret to easing such a burden?
+                      </p>
+                    </div>
+
+                    {feedback && (
+                      <div className={`text-center p-3 rounded-md ${
+                        feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('SHARE') || feedback.includes('flame brightens')
                           ? 'bg-green-900/50 text-green-300'
                           : 'bg-red-900/50 text-red-300'
                       }`}>
