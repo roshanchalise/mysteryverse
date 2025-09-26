@@ -42,7 +42,10 @@
       "Read(//private/var/folders/**)",
       "Bash(find:*)",
       "Bash(railway status:*)",
-      "Bash(railway login:*)"
+      "Bash(railway login:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git pull:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []
