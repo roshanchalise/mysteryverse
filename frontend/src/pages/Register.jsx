@@ -64,7 +64,7 @@ function Register() {
           <Link to="/" className="font-title text-4xl font-bold text-mystery-gold" onClick={() => {}}>
             Mystery Verse
           </Link>
-          <p className="text-gray-300 mt-2">Begin your mysterious journey</p>
+          <p className="text-gray-300 mt-2">Enter the realm of mysteries</p>
         </div>
 
         <div className="card">
