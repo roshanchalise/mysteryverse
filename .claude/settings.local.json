@@ -55,7 +55,8 @@
       "Bash(./deploy-github-pages.sh:*)",
       "Bash(git submodule:*)",
       "Bash(gh workflow:*)",
-      "Bash(NEW_TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJpYXQiOjE3NTg5OTM0MjEsImV4cCI6MTc1OTA3OTgyMX0.0exFBNRqmTYnprGLOXQ0Up8IkaJ-1nqgfqXN4A5DEIg\")"
+      "Bash(NEW_TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdHVzZXIiLCJpYXQiOjE3NTg5OTM0MjEsImV4cCI6MTc1OTA3OTgyMX0.0exFBNRqmTYnprGLOXQ0Up8IkaJ-1nqgfqXN4A5DEIg\")",
+      "Bash(pwdx:*)"
     ],
     "deny": [],
     "ask": []
