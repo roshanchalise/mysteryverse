@@ -1,4 +1,4 @@
-name: Deploy Backend to Render
+name: Deploy Backend to Railway
 
 on:
   push:
@@ -36,8 +36,8 @@ jobs:
         cd backend
         npm test --if-present
 
-    - name: Deploy to Render
+    - name: Deploy to Railway
       if: github.ref == 'refs/heads/main'
       run: |
-        echo "Backend will be deployed to Render automatically via webhook"
-        echo "Make sure to configure Render webhook in your repository settings"
+        echo "Backend will be deployed to Railway automatically via GitHub integration"
+        echo "Railway deployment configured in railway.toml"

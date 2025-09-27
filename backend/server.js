@@ -20,11 +20,17 @@ const corsOptions = {
     // Allow localhost for development
     if (origin.includes('localhost')) return callback(null, true);
 
+    // Allow GitHub Pages
+    if (origin.includes('github.io')) return callback(null, true);
+
     // Allow Vercel deployments
     if (origin.includes('vercel.app')) return callback(null, true);
 
     // Allow Railway deployments
     if (origin.includes('railway.app')) return callback(null, true);
+
+    // Allow Render deployments
+    if (origin.includes('onrender.com')) return callback(null, true);
 
     // For production, you might want to restrict this further
     return callback(null, true);
