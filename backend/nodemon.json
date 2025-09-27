@@ -1,0 +1,4 @@
+{
+  "watch": ["*.js", "routes/", "controllers/", "middleware/", "utils/", "prisma/"],
+  "ignore": ["backups/", "node_modules/", "*.log"]
+}
