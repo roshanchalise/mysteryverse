@@ -48,3 +48,4 @@ cd frontend
 npm install
 npm run dev
 ```
+# Vercel deployment fix
