@@ -1,17 +1,7 @@
 {
-  "timestamp": "2025-09-27T09:58:26.793Z",
+  "timestamp": "2025-09-27T17:16:53.556Z",
   "version": "1.0",
-  "users": [
-    {
-      "id": 7,
-      "username": "roshan",
-      "password": "$2a$10$OaOlQGCejinohLHS8nhwxelyc8/U689aehq5tpKnd5SUKLNbmgfdC",
-      "currentVerse": 1,
-      "completedVerses": "[]",
-      "createdAt": "2025-09-27T03:37:49.356Z",
-      "updatedAt": "2025-09-27T03:37:49.356Z"
-    }
-  ],
+  "users": [],
   "verses": [
     {
       "id": 1,
@@ -21,8 +11,8 @@
       "answer": "PUNCHLINE",
       "orderIndex": 1,
       "isActive": true,
-      "createdAt": "2025-09-27T03:00:26.823Z",
-      "updatedAt": "2025-09-27T03:00:26.823Z"
+      "createdAt": "2025-09-27T17:16:46.426Z",
+      "updatedAt": "2025-09-27T17:16:46.426Z"
     },
     {
       "id": 2,
@@ -32,8 +22,8 @@
       "answer": "STREAM",
       "orderIndex": 2,
       "isActive": true,
-      "createdAt": "2025-09-27T03:00:26.823Z",
-      "updatedAt": "2025-09-27T03:00:26.823Z"
+      "createdAt": "2025-09-27T17:16:46.426Z",
+      "updatedAt": "2025-09-27T17:16:46.426Z"
     },
     {
       "id": 3,
@@ -43,10 +33,10 @@
       "answer": "SHARE",
       "orderIndex": 3,
       "isActive": true,
-      "createdAt": "2025-09-27T03:00:26.823Z",
-      "updatedAt": "2025-09-27T03:00:26.823Z"
+      "createdAt": "2025-09-27T17:16:46.426Z",
+      "updatedAt": "2025-09-27T17:16:46.426Z"
     }
   ],
-  "totalUsers": 1,
+  "totalUsers": 0,
   "totalVerses": 3
 }
