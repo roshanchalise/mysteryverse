@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../config/api';
 
 function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -14,7 +14,7 @@ function Admin() {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axios.post('/api/admin/login', { adminPassword });
+      const response = await api.post('/api/admin/login', { adminPassword });
       setIsAuthenticated(true);
       setStoredAdminPassword(adminPassword);
       setAdminPassword('');
@@ -29,7 +29,7 @@ function Admin() {
   const fetchUsers = async (password = storedAdminPassword) => {
     try {
       setLoading(true);
-      const response = await axios.post('/api/admin/users', { adminPassword: password });
+      const response = await api.post('/api/admin/users', { adminPassword: password });
       setUsers(response.data.users);
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -46,7 +46,7 @@ function Admin() {
 
     try {
       setLoading(true);
-      await axios.delete(`/api/admin/users/${userId}`, {
+      await api.delete(`/api/admin/users/${userId}`, {
         data: { adminPassword: storedAdminPassword }
       });
 

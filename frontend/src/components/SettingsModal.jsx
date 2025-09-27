@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../config/api';
 import { playClickSound } from '../utils/audio';
 import {
   setBackgroundMusicVolume,
@@ -40,7 +40,7 @@ function SettingsModal({ isOpen, onClose }) {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/auth/profile', {
+      const response = await api.get('/api/auth/profile', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -73,7 +73,7 @@ function SettingsModal({ isOpen, onClose }) {
       setError('');
       
       const token = localStorage.getItem('token');
-      await axios.put('/api/auth/profile', profileForm, {
+      await api.put('/api/auth/profile', profileForm, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -117,7 +117,7 @@ function SettingsModal({ isOpen, onClose }) {
       setError('');
 
       const token = localStorage.getItem('token');
-      await axios.post('/api/game/reset-progress', {}, {
+      await api.post('/api/game/reset-progress', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

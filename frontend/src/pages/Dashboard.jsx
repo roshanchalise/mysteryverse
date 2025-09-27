@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../config/api';
 import ProgressBar from '../components/ProgressBar';
 import VerseCard from '../components/VerseCard';
 import { playClickSound } from '../utils/audio';
@@ -125,8 +125,8 @@ function Dashboard() {
     try {
       setLoading(true);
       const [versesResponse, progressResponse] = await Promise.all([
-        axios.get('/api/game/verses'),
-        axios.get('/api/game/progress')
+        api.get('/api/game/verses'),
+        api.get('/api/game/progress')
       ]);
 
       setVerses(versesResponse.data.verses);

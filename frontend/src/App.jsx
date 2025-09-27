@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Landing from './pages/Landing';
@@ -45,7 +45,7 @@ function AppContent() {
     // Global click handler for all buttons and links
     const handleGlobalClick = (event) => {
       const target = event.target;
-      
+
       // Check if the clicked element is a button, link, or has a click handler
       if (
         target.tagName === 'BUTTON' ||
@@ -77,45 +77,77 @@ function AppContent() {
   return (
     <div className="min-h-screen">
       {user && <Navbar />}
-      <Routes>
-        <Route path="/" element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        } />
-        <Route path="/login" element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        } />
-        <Route path="/register" element={
-          <PublicRoute>
-            <Register />
-          </PublicRoute>
-        } />
-        <Route path="/dashboard" element={
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        } />
-        <Route path="/verse/:id" element={
-          <PrivateRoute>
-            <Puzzle />
-          </PrivateRoute>
-        } />
-        <Route path="/admin" element={<Admin />} />
-      </Routes>
+      <Outlet />
     </div>
   );
 }
 
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AppContent />,
+      children: [
+        {
+          index: true,
+          element: (
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "login",
+          element: (
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "register",
+          element: (
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "dashboard",
+          element: (
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "verse/:id",
+          element: (
+            <PrivateRoute>
+              <Puzzle />
+            </PrivateRoute>
+          ),
+        },
+        {
+          path: "admin",
+          element: <Admin />,
+        },
+      ],
+    },
+  ],
+  {
+    future: {
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    },
+  }
+);
+
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </Router>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   );
 }
 

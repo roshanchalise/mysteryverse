@@ -47,7 +47,10 @@
       "Bash(git pull:*)",
       "Bash(git checkout:*)",
       "Bash(gh run list:*)",
-      "WebFetch(domain:www.mysterypioneer.com)"
+      "WebFetch(domain:www.mysterypioneer.com)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsInVzZXJuYW1lIjoicm9zaGFuY2hhbGlzZSIsImlhdCI6MTc1ODk0MjczMiwiZXhwIjoxNzU5MDI5MTMyfQ.8ttdy1ofzr0C6YPPaNbtnbmSJJ-bRsC1PeDXeCs4dHk\")",
+      "Bash(echo \"Testing game API endpoints...\" curl -s -X GET \"http://localhost:3333/api/game/verses\" -H \"Authorization: Bearer $TOKEN\")",
+      "Bash(head -5 echo \"\" curl -s -X GET \"http://localhost:3333/api/game/progress\" -H \"Authorization: Bearer $TOKEN\")"
     ],
     "deny": [],
     "ask": []
