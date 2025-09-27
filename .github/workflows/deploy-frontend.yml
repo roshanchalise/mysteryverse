@@ -32,6 +32,7 @@ jobs:
           npm run build
         env:
           NODE_ENV: production
+          GITHUB_PAGES: true
           VITE_API_URL: https://mysteryverse-backend-production.up.railway.app
 
       - name: Deploy to GitHub Pages

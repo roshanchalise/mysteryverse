@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: process.env.VERCEL ? '/' : (process.env.NODE_ENV === 'production' ? '/mysteryverse/' : '/'),
+  base: process.env.VERCEL ? '/' : (process.env.GITHUB_PAGES ? '/mysteryverse/' : '/'),
   server: {
     port: 3000,
     proxy: {
