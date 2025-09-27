@@ -74,7 +74,7 @@ const getVerses = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(401).json({ error: 'User not found' });
     }
 
     const verses = await prisma.verse.findMany({
@@ -268,7 +268,7 @@ const getProgress = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(401).json({ error: 'User not found' });
     }
 
     const totalVerses = await prisma.verse.count({ where: { isActive: true } });
