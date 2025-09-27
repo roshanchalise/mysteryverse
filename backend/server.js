@@ -5,6 +5,8 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const gameRoutes = require('./routes/game');
 const adminRoutes = require('./routes/admin');
+const { createStartupBackup } = require('./utils/backup');
+const { scheduleBackups } = require('./utils/scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -42,10 +44,21 @@ app.get('/', (req, res) => {
   res.json({ message: 'Mystery Verse API is running!' });
 });
 
+// Create startup backup and initialize schedulers
+const initializeServer = async () => {
+  try {
+    await createStartupBackup();
+    scheduleBackups();
+  } catch (error) {
+    console.error('⚠️  Server initialization failed:', error);
+  }
+};
+
 // For local development
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
+    initializeServer();
   });
 }
 

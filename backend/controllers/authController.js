@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
+const { createEventBackup } = require('../utils/scheduler');
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,11 @@ const register = async (req, res) => {
     });
 
     const token = generateToken(user.id, user.username);
+
+    // Create automatic backup after user registration
+    createEventBackup('user_registration', { username: user.username, id: user.id }).catch(err => {
+      console.error('Failed to create registration backup:', err);
+    });
 
     res.status(201).json({
       message: 'User registered successfully',

@@ -1,5 +1,6 @@
 const express = require('express');
 const { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser } = require('../controllers/adminController');
+const { createBackup, getBackups, downloadBackup, restoreBackup, cleanupBackups, getBackupStats } = require('../controllers/backupController');
 const { authenticateAdmin } = require('../middleware/auth');
 
 const router = express.Router();
@@ -23,5 +24,13 @@ router.delete('/verses/:id', authenticateAdmin, deleteVerse);
 router.get('/users', authenticateAdmin, getAllUsers);
 router.post('/users', authenticateAdmin, getAllUsers);
 router.delete('/users/:id', authenticateAdmin, deleteUser);
+
+// Backup routes
+router.post('/backup/create', authenticateAdmin, createBackup);
+router.get('/backup/list', authenticateAdmin, getBackups);
+router.get('/backup/stats', authenticateAdmin, getBackupStats);
+router.get('/backup/download/:filename', authenticateAdmin, downloadBackup);
+router.post('/backup/restore', authenticateAdmin, restoreBackup);
+router.post('/backup/cleanup', authenticateAdmin, cleanupBackups);
 
 module.exports = router;
