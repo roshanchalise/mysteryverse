@@ -1,24 +1,15 @@
 {
-  "timestamp": "2025-09-27T03:25:06.302Z",
+  "timestamp": "2025-09-27T05:43:41.285Z",
   "version": "1.0",
   "users": [
     {
-      "id": 5,
+      "id": 7,
       "username": "roshan",
-      "password": "$2a$10$F1mLYCfQkWAj0F6li2M9C.ld8cV.VTWm3m0rfZ5q4PBKXRGgmKQ/y",
+      "password": "$2a$10$OaOlQGCejinohLHS8nhwxelyc8/U689aehq5tpKnd5SUKLNbmgfdC",
       "currentVerse": 1,
       "completedVerses": "[]",
-      "createdAt": "2025-09-27T03:17:22.080Z",
-      "updatedAt": "2025-09-27T03:17:22.080Z"
-    },
-    {
-      "id": 6,
-      "username": "testdashboard",
-      "password": "$2a$10$Q/Hc6.i6NiHAuUcw/T603.3S/Z.xGkIZVl85Fmy0I9qdrzGVwr6QO",
-      "currentVerse": 1,
-      "completedVerses": "[]",
-      "createdAt": "2025-09-27T03:21:06.935Z",
-      "updatedAt": "2025-09-27T03:21:06.935Z"
+      "createdAt": "2025-09-27T03:37:49.356Z",
+      "updatedAt": "2025-09-27T03:37:49.356Z"
     }
   ],
   "verses": [
@@ -56,6 +47,6 @@
       "updatedAt": "2025-09-27T03:00:26.823Z"
     }
   ],
-  "totalUsers": 2,
+  "totalUsers": 1,
   "totalVerses": 3
 }
