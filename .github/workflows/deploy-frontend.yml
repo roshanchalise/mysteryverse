@@ -31,6 +31,7 @@ jobs:
           cd frontend
           npm run build
         env:
+          NODE_ENV: production
           VITE_API_URL: https://mysteryverse-backend-production.up.railway.app
 
       - name: Deploy to GitHub Pages
