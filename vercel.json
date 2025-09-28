@@ -5,5 +5,11 @@
   "framework": null,
   "env": {
     "VITE_API_URL": "https://mysteryversebackend-production.up.railway.app"
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
