@@ -4,6 +4,6 @@
   "installCommand": "cd frontend && npm install",
   "framework": null,
   "env": {
-    "VITE_API_URL": "https://mysteryverse-production.up.railway.app"
+    "VITE_API_URL": "https://mysteryversebackend-production.up.railway.app"
   }
 }
