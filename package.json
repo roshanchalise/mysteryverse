@@ -1,0 +1,14 @@
+{
+  "name": "mystery-verse-monorepo",
+  "version": "1.0.0",
+  "description": "Mystery Verse puzzle game - monorepo",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "vercel-build": "cd frontend && npm install && npm run build"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}
