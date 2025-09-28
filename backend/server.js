@@ -5,8 +5,8 @@ require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const gameRoutes = require('./routes/game');
 const adminRoutes = require('./routes/admin');
-const { createStartupBackup } = require('./utils/backup');
-const { scheduleBackups } = require('./utils/scheduler');
+// const { createStartupBackup } = require('./utils/backup');
+// const { scheduleBackups } = require('./utils/scheduler');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -50,11 +50,12 @@ app.get('/', (req, res) => {
   res.json({ message: 'Mystery Verse API is running!' });
 });
 
-// Create startup backup and initialize schedulers
+// Create startup backup and initialize schedulers - TEMPORARILY DISABLED
 const initializeServer = async () => {
   try {
-    await createStartupBackup();
-    scheduleBackups();
+    // await createStartupBackup();
+    // scheduleBackups();
+    console.log('⚠️  Backup system temporarily disabled for Railway deployment');
   } catch (error) {
     console.error('⚠️  Server initialization failed:', error);
   }
