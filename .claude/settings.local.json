@@ -4,7 +4,14 @@
       "Bash(npm start:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(brew:*)",
+      "Bash(psql:*)",
+      "Bash(/Applications/Postgres.app/Contents/Versions/latest/bin/psql:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npx prisma:*)",
+      "Bash(node:*)",
+      "Bash(sqlite3:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-09-28T19:25:52.217Z",
+  "version": "1.0",
+  "users": [
+    {
+      "id": 2,
+      "username": "localhost",
+      "password": "$2a$10$dq3Op1wpyGUJ9Cdy2wAoJukFvcbSCRC/jUHIbkdzZQwZiTztSroZ2",
+      "currentVerse": 1,
+      "completedVerses": "[]",
+      "createdAt": "2025-09-28T19:25:52.213Z",
+      "updatedAt": "2025-09-28T19:25:52.213Z"
+    }
+  ],
+  "verses": [],
+  "totalUsers": 1,
+  "totalVerses": 0
+}
