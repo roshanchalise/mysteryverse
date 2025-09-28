@@ -2,7 +2,7 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "npm start"
+startCommand = "cd backend && npm start"
 healthcheckPath = "/"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
@@ -10,7 +10,7 @@ restartPolicyMaxRetries = 10
 
 [[services]]
 name = "mysteryverse-backend"
-source = "."
+source = "./backend"
 
 [services.variables]
 PORT = "3333"
