@@ -14,20 +14,12 @@ function SettingsModal({ isOpen, onClose }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Profile settings state
-  const [profileForm, setProfileForm] = useState({
-    username: ''
-  });
-
   // Sound settings state
   const [soundSettings, setSoundSettings] = useState({
     musicEnabled: false,
     clicksEnabled: true
   });
 
-  // Reset confirmation state
-  const [showResetConfirm, setShowResetConfirm] = useState(false);
-  const [resetConfirmText, setResetConfirmText] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -50,9 +42,6 @@ function SettingsModal({ isOpen, onClose }) {
       });
       
       setProfile(response.data.user);
-      setProfileForm({
-        username: response.data.user.username
-      });
     } catch (error) {
       console.error('Failed to fetch profile:', error);
       setError('Failed to load profile information');
@@ -76,26 +65,6 @@ function SettingsModal({ isOpen, onClose }) {
     });
   };
 
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      setError('');
-      
-      const token = localStorage.getItem('token');
-      await api.put('/api/auth/profile', profileForm, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      setSuccess('Profile updated successfully!');
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      setError('Failed to update profile. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSoundSettingChange = async (setting, value) => {
     const newSettings = { ...soundSettings, [setting]: value };
@@ -120,39 +89,12 @@ function SettingsModal({ isOpen, onClose }) {
     }
   };
 
-  const handleResetProgress = async () => {
-    if (resetConfirmText !== 'RESET') {
-      setError('Please type "RESET" to confirm');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError('');
-
-      const token = localStorage.getItem('token');
-      await api.post('/api/game/reset-progress', {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      setSuccess('Progress reset successfully! You can now start fresh with any verse you choose. Close this modal when you\'re ready to continue.');
-      setShowResetConfirm(false);
-      setResetConfirmText('');
-      // Don't auto-close the modal - let the user close it manually
-    } catch (error) {
-      console.error('Failed to reset progress:', error);
-      setError('Failed to reset progress. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (!isOpen) return null;
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: '👤' },
-    { id: 'sound', label: 'Sound', icon: '🔊' },
-    { id: 'reset', label: 'Reset', icon: '🔄' }
+    { id: 'sound', label: 'Sound', icon: '🔊' }
   ];
 
   return (
@@ -218,28 +160,16 @@ function SettingsModal({ isOpen, onClose }) {
                   <p className="text-gray-300">Loading profile...</p>
                 </div>
               ) : (
-                <form onSubmit={handleProfileUpdate} className="space-y-4">
-                  <div>
+                <div className="space-y-4">
+                  <div className="p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-600">
                     <label className="block text-gray-300 text-sm font-medium mb-2">
                       Username
                     </label>
-                    <input
-                      type="text"
-                      value={profileForm.username}
-                      onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                      className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-mystery-gold"
-                      required
-                    />
+                    <span className="text-mystery-gold text-lg font-semibold">
+                      {profile?.username}
+                    </span>
                   </div>
-
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full btn-primary mt-4"
-                  >
-                    {loading ? 'Updating...' : 'Update Profile'}
-                  </button>
-                </form>
+                </div>
               )}
 
               {profile && (
@@ -305,68 +235,6 @@ function SettingsModal({ isOpen, onClose }) {
             </div>
           )}
 
-          {/* Reset Tab */}
-          {activeTab === 'reset' && (
-            <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Reset Settings</h3>
-              
-              <div className="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-50 rounded-lg p-6">
-                <div className="flex items-center mb-4">
-                  <span className="text-2xl mr-3">⚠️</span>
-                  <h4 className="text-red-300 font-semibold">Be Aware</h4>
-                </div>
-                
-                <p className="text-gray-300 mb-6">
-                  Resetting your progress will delete all your solved verses and achievements. 
-                  This action cannot be undone.
-                </p>
-
-                {!showResetConfirm ? (
-                  <button
-                    onClick={() => {
-                      setShowResetConfirm(true);
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium transition-colors"
-                  >
-                    Reset My Progress
-                  </button>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-yellow-300 font-medium">
-                      Are you absolutely sure? Type "RESET" to confirm:
-                    </p>
-                    <input
-                      type="text"
-                      value={resetConfirmText}
-                      onChange={(e) => setResetConfirmText(e.target.value)}
-                      placeholder="Type RESET"
-                      className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
-                    />
-                    <div className="flex space-x-3">
-                      <button
-                        onClick={() => {
-                          handleResetProgress();
-                        }}
-                        disabled={loading || resetConfirmText !== 'RESET'}
-                        className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-2 rounded font-medium transition-colors"
-                      >
-                        {loading ? 'Resetting...' : 'Confirm Reset'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setShowResetConfirm(false);
-                          setResetConfirmText('');
-                        }}
-                        className="bg-gray-600 hover:bg-gray-500 text-white px-4 py-2 rounded font-medium transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

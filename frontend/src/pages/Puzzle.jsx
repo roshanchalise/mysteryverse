@@ -18,6 +18,7 @@ function Puzzle() {
   const [showCongratulations, setShowCongratulations] = useState(false);
   const [congratsData, setCongratsData] = useState({ isGameComplete: false });
   const [leaderboard, setLeaderboard] = useState([]);
+  const [userRank, setUserRank] = useState(null);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
   const punchAudioRef = useRef(null);
   const fishingAudioRef = useRef(null);
@@ -93,10 +94,12 @@ function Puzzle() {
     try {
       setLoadingLeaderboard(true);
       const response = await api.get(`/api/game/verse/${id}/leaderboard`);
-      setLeaderboard(response.data.leaderboard || []);
+      setLeaderboard(response.data.topThree || []);
+      setUserRank(response.data.userRank || null);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
       setLeaderboard([]);
+      setUserRank(null);
     } finally {
       setLoadingLeaderboard(false);
     }
@@ -584,8 +587,9 @@ function Puzzle() {
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mystery-gold mx-auto"></div>
                   <p className="text-gray-400 text-sm mt-2">Loading...</p>
                 </div>
-              ) : leaderboard.length > 0 ? (
+              ) : leaderboard.length > 0 || userRank ? (
                 <div className="space-y-3">
+                  {/* Top 3 Leaderboard */}
                   {leaderboard.map((entry, index) => (
                     <div
                       key={index}
@@ -598,7 +602,7 @@ function Puzzle() {
                       }`}
                     >
                       <div className="flex items-center space-x-3">
-                        <span className="text-xl">{entry.emoji}</span>
+                        <span className="text-xl inline-block w-6 h-6 text-center leading-6">{entry.emoji}</span>
                         <div>
                           <p className="font-medium text-white">{entry.username}</p>
                           <p className="text-xs text-gray-400">{entry.title}</p>
@@ -614,6 +618,37 @@ function Puzzle() {
                       </div>
                     </div>
                   ))}
+
+                  {/* User's Personal Rank (if not already in top 3) */}
+                  {userRank && userRank.rank > 3 && (
+                    <>
+                      {/* Separator */}
+                      <div className="flex items-center my-4">
+                        <div className="flex-1 border-t border-gray-600"></div>
+                        <div className="px-3 text-xs text-gray-500">Your Rank</div>
+                        <div className="flex-1 border-t border-gray-600"></div>
+                      </div>
+
+                      {/* User's Rank Display */}
+                      <div className="flex items-center justify-between p-3 rounded-lg border bg-blue-500/10 border-blue-500/30">
+                        <div className="flex items-center space-x-3">
+                          <span className="text-xl inline-block w-6 h-6 text-center leading-6">⭐</span>
+                          <div>
+                            <p className="font-medium text-white">{userRank.username}</p>
+                            <p className="text-xs text-gray-400">Rank {userRank.rank}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-gray-400">
+                            {new Date(userRank.solvedAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {new Date(userRank.solvedAt).toLocaleTimeString()}
+                          </p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="text-center py-6">

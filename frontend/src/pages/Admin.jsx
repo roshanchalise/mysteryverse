@@ -9,6 +9,11 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  // Reset confirmation state
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState('');
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -58,6 +63,34 @@ function Admin() {
     } catch (error) {
       console.error('Failed to delete user:', error);
       setError('Failed to delete user. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetAllProgress = async () => {
+    if (resetConfirmText !== 'RESET ALL') {
+      setError('Please type "RESET ALL" to confirm');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+
+      await api.post('/api/admin/reset-all-progress', {
+        adminPassword: storedAdminPassword
+      });
+
+      setSuccess('All player progress and leaderboards have been reset successfully! All players can now start fresh from verse 1.');
+      setShowResetConfirm(false);
+      setResetConfirmText('');
+
+      // Refresh user list to see updated progress
+      fetchUsers();
+    } catch (error) {
+      console.error('Failed to reset all progress:', error);
+      setError('Failed to reset all progress. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -134,6 +167,74 @@ function Admin() {
             <button onClick={() => { setError(''); }} className="float-right">×</button>
           </div>
         )}
+
+        {success && (
+          <div className="bg-green-500 bg-opacity-20 border border-green-500 text-green-200 px-4 py-3 rounded-lg mb-6">
+            {success}
+            <button onClick={() => { setSuccess(''); }} className="float-right">×</button>
+          </div>
+        )}
+
+        {/* Reset All Progress Section */}
+        <div className="mb-8">
+          <div className="bg-red-500 bg-opacity-10 border border-red-500 border-opacity-50 rounded-lg p-6">
+            <div className="flex items-center mb-4">
+              <span className="text-2xl mr-3">⚠️</span>
+              <h2 className="text-2xl font-semibold text-red-300">Danger Zone</h2>
+            </div>
+
+            <h3 className="text-lg font-semibold text-white mb-2">Reset All Player Progress</h3>
+            <p className="text-gray-300 mb-6">
+              This will reset ALL players back to verse 1 and clear ALL leaderboards.
+              This gives everyone a fresh start. This action cannot be undone, but a backup will be created first.
+            </p>
+
+            {!showResetConfirm ? (
+              <button
+                onClick={() => {
+                  setShowResetConfirm(true);
+                  setError('');
+                  setSuccess('');
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-medium transition-colors"
+              >
+                Reset All Progress & Leaderboards
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-yellow-300 font-medium">
+                  Are you absolutely sure? This will affect ALL {users.length} players. Type "RESET ALL" to confirm:
+                </p>
+                <input
+                  type="text"
+                  value={resetConfirmText}
+                  onChange={(e) => setResetConfirmText(e.target.value)}
+                  placeholder="Type RESET ALL"
+                  className="w-full p-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                />
+                <div className="flex space-x-3">
+                  <button
+                    onClick={handleResetAllProgress}
+                    disabled={loading || resetConfirmText !== 'RESET ALL'}
+                    className="bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-6 py-3 rounded font-medium transition-colors"
+                  >
+                    {loading ? 'Resetting...' : 'Confirm Reset All'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowResetConfirm(false);
+                      setResetConfirmText('');
+                      setError('');
+                    }}
+                    className="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded font-medium transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* User Management Section */}
         <div className="mb-6">

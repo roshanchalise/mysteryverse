@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const { createEventBackup } = require('../utils/scheduler');
 
 const prisma = new PrismaClient();
 
@@ -156,4 +157,34 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser };
+const resetAllProgress = async (req, res) => {
+  try {
+    // Create backup before reset
+    await createEventBackup('admin_full_reset', {
+      resetBy: 'admin',
+      timestamp: new Date().toISOString()
+    }).catch(err => {
+      console.error('Failed to create pre-reset backup:', err);
+    });
+
+    // Reset all users' currentVerse to 1 and clear completedVerses
+    await prisma.user.updateMany({
+      data: {
+        currentVerse: 1,
+        completedVerses: "[]"
+      }
+    });
+
+    // Clear all leaderboard entries
+    await prisma.leaderboardEntry.deleteMany({});
+
+    res.json({
+      message: 'All player progress and leaderboards have been reset successfully. All players can now start fresh from verse 1.'
+    });
+  } catch (error) {
+    console.error('Reset all progress error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser, resetAllProgress };
