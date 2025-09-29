@@ -15,6 +15,9 @@ model User {
   completedVerses String   @default("[]")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  // Relation to leaderboard entries
+  leaderboardEntries LeaderboardEntry[]
 }
 
 model Verse {
@@ -27,4 +30,24 @@ model Verse {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Relation to leaderboard entries
+  leaderboardEntries LeaderboardEntry[]
+}
+
+model LeaderboardEntry {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  verseId     Int
+  rank        Int      // 1 = Gold, 2 = Silver, 3 = Bronze
+  solvedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse       Verse    @relation(fields: [verseId], references: [id], onDelete: Cascade)
+
+  // Ensure one entry per user per verse, and only 3 entries per verse
+  @@unique([userId, verseId])
+  @@index([verseId, rank])
 }

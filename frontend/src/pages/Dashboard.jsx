@@ -5,6 +5,21 @@ import ProgressBar from '../components/ProgressBar';
 import VerseCard from '../components/VerseCard';
 import { playClickSound } from '../utils/audio';
 
+// Helper function to get current user ID from token
+const getCurrentUserId = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    // JWT tokens have 3 parts separated by dots
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.userId;
+  } catch (error) {
+    return null;
+  }
+};
+
 function Dashboard() {
   const [verses, setVerses] = useState([]);
   const [progress, setProgress] = useState(null);
@@ -22,7 +37,9 @@ function Dashboard() {
       
       // Attempt to start music immediately
       import('../utils/backgroundMusic.js').then(async ({ startBackgroundMusic, setBackgroundMusicVolume }) => {
-        const musicPreference = localStorage.getItem('mysteryverse-music-enabled');
+        const userId = getCurrentUserId();
+        const musicKey = userId ? `mysteryverse-music-enabled-${userId}` : 'mysteryverse-music-enabled';
+        const musicPreference = localStorage.getItem(musicKey);
         
         if (musicPreference !== 'false') {
           try {
@@ -30,7 +47,7 @@ function Dashboard() {
             if (started) {
               // Always set volume to 0.1 (10%)
               setBackgroundMusicVolume(0.1);
-              localStorage.setItem('mysteryverse-music-enabled', 'true');
+              localStorage.setItem(musicKey, 'true');
             }
           } catch (error) {
             console.log('Auto-start music blocked by browser, will start on first interaction');
@@ -46,7 +63,9 @@ function Dashboard() {
       // Import background music functions dynamically
       import('../utils/backgroundMusic.js').then(async ({ startBackgroundMusic, isBackgroundMusicPlaying, setBackgroundMusicVolume }) => {
         const token = localStorage.getItem('token');
-        const musicPreference = localStorage.getItem('mysteryverse-music-enabled');
+        const userId = getCurrentUserId();
+        const musicKey = userId ? `mysteryverse-music-enabled-${userId}` : 'mysteryverse-music-enabled';
+        const musicPreference = localStorage.getItem(musicKey);
         
         // Only trigger if user is authenticated and music is not disabled
         if (token && !isBackgroundMusicPlaying() && musicPreference !== 'false') {
@@ -55,10 +74,10 @@ function Dashboard() {
             if (started) {
               // Always set volume to 0.1 (10%)
               setBackgroundMusicVolume(0.1);
-              localStorage.setItem('mysteryverse-music-enabled', 'true');
+              localStorage.setItem(musicKey, 'true');
             }
             if (musicPreference === null) {
-              localStorage.setItem('mysteryverse-music-enabled', 'true');
+              localStorage.setItem(musicKey, 'true');
             }
           } catch (error) {
             console.log('Failed to start background music on click');

@@ -32,9 +32,14 @@ function SettingsModal({ isOpen, onClose }) {
   useEffect(() => {
     if (isOpen) {
       fetchProfile();
-      loadSoundSettings();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (profile?.id) {
+      loadSoundSettings();
+    }
+  }, [profile]);
 
   const fetchProfile = async () => {
     try {
@@ -57,8 +62,13 @@ function SettingsModal({ isOpen, onClose }) {
   };
 
   const loadSoundSettings = () => {
-    const musicEnabled = localStorage.getItem('mysteryverse-music-enabled') === 'true';
-    const clicksEnabled = localStorage.getItem('mysteryverse-clicks-enabled') !== 'false';
+    if (!profile?.id) return;
+
+    const musicKey = `mysteryverse-music-enabled-${profile.id}`;
+    const clicksKey = `mysteryverse-clicks-enabled-${profile.id}`;
+
+    const musicEnabled = localStorage.getItem(musicKey) === 'true';
+    const clicksEnabled = localStorage.getItem(clicksKey) !== 'false';
 
     setSoundSettings({
       musicEnabled,
@@ -92,8 +102,11 @@ function SettingsModal({ isOpen, onClose }) {
     setSoundSettings(newSettings);
 
     // Apply changes immediately
+    if (!profile?.id) return;
+
     if (setting === 'musicEnabled') {
-      localStorage.setItem('mysteryverse-music-enabled', value.toString());
+      const musicKey = `mysteryverse-music-enabled-${profile.id}`;
+      localStorage.setItem(musicKey, value.toString());
       if (value !== isBackgroundMusicPlaying()) {
         await toggleBackgroundMusic();
       }
@@ -102,7 +115,8 @@ function SettingsModal({ isOpen, onClose }) {
         setBackgroundMusicVolume(0.1);
       }
     } else if (setting === 'clicksEnabled') {
-      localStorage.setItem('mysteryverse-clicks-enabled', value.toString());
+      const clicksKey = `mysteryverse-clicks-enabled-${profile.id}`;
+      localStorage.setItem(clicksKey, value.toString());
     }
   };
 

@@ -199,6 +199,25 @@ const submitAnswer = async (req, res) => {
       if (!wasAlreadySolved) {
         completedVerses.push(verse.orderIndex);
 
+        // Check current leaderboard for this verse
+        const currentLeaderboard = await prisma.leaderboardEntry.findMany({
+          where: { verseId: verseId },
+          orderBy: { rank: 'asc' }
+        });
+
+        // Add to leaderboard if there's space (top 3 only)
+        if (currentLeaderboard.length < 3) {
+          const nextRank = currentLeaderboard.length + 1;
+          await prisma.leaderboardEntry.create({
+            data: {
+              userId: req.user.userId,
+              verseId: verseId,
+              rank: nextRank,
+              solvedAt: new Date()
+            }
+          });
+        }
+
         // Update database with new completion
         await prisma.user.update({
           where: { id: req.user.userId },
@@ -371,4 +390,54 @@ const getNewPuzzle = async (req, res) => {
   }
 };
 
-module.exports = { getVerses, getVerse, submitAnswer, getProgress, resetProgress, getNewPuzzle };
+// Get leaderboard for a specific verse
+const getVerseLeaderboard = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const verseId = parseInt(id);
+
+    // Verify verse exists
+    const verse = await prisma.verse.findUnique({
+      where: { id: verseId, isActive: true }
+    });
+
+    if (!verse) {
+      return res.status(404).json({ error: 'Verse not found' });
+    }
+
+    // Get top 3 leaderboard entries for this verse
+    const leaderboard = await prisma.leaderboardEntry.findMany({
+      where: { verseId: verseId },
+      include: {
+        user: {
+          select: {
+            username: true
+          }
+        }
+      },
+      orderBy: { rank: 'asc' },
+      take: 3
+    });
+
+    // Format the response with rank emojis
+    const formattedLeaderboard = leaderboard.map(entry => ({
+      rank: entry.rank,
+      username: entry.user.username,
+      solvedAt: entry.solvedAt,
+      emoji: entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉',
+      title: entry.rank === 1 ? 'Gold' : entry.rank === 2 ? 'Silver' : 'Bronze'
+    }));
+
+    res.json({
+      verseId: verseId,
+      verseTitle: verse.title,
+      leaderboard: formattedLeaderboard
+    });
+
+  } catch (error) {
+    console.error('Get verse leaderboard error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { getVerses, getVerse, submitAnswer, getProgress, resetProgress, getNewPuzzle, getVerseLeaderboard };

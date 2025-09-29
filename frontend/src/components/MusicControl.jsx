@@ -1,11 +1,26 @@
 import { useState, useEffect } from 'react';
-import { 
-  startBackgroundMusic, 
-  stopBackgroundMusic, 
+import {
+  startBackgroundMusic,
+  stopBackgroundMusic,
   toggleBackgroundMusic,
   isBackgroundMusicPlaying,
-  setBackgroundMusicVolume 
+  setBackgroundMusicVolume
 } from '../utils/backgroundMusic';
+
+// Helper function to get current user ID from token
+const getCurrentUserId = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    // JWT tokens have 3 parts separated by dots
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.userId;
+  } catch (error) {
+    return null;
+  }
+};
 
 function MusicControl() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -17,8 +32,11 @@ function MusicControl() {
     setIsPlaying(isBackgroundMusicPlaying());
     
     // Remember user's music preference
-    const musicPreference = localStorage.getItem('mysteryverse-music-enabled');
-    const volumePreference = localStorage.getItem('mysteryverse-music-volume');
+    const userId = getCurrentUserId();
+    const musicKey = userId ? `mysteryverse-music-enabled-${userId}` : 'mysteryverse-music-enabled';
+    const volumeKey = userId ? `mysteryverse-music-volume-${userId}` : 'mysteryverse-music-volume';
+    const musicPreference = localStorage.getItem(musicKey);
+    const volumePreference = localStorage.getItem(volumeKey);
     
     if (volumePreference) {
       const savedVolume = parseFloat(volumePreference);
@@ -34,7 +52,7 @@ function MusicControl() {
           if (started) {
             setIsPlaying(true);
             setBackgroundMusicVolume(volumePreference ? parseFloat(volumePreference) : volume);
-            localStorage.setItem('mysteryverse-music-enabled', 'true');
+            localStorage.setItem(musicKey, 'true');
           }
         } catch (error) {
           console.error('Failed to start music:', error);
@@ -81,7 +99,9 @@ function MusicControl() {
     setIsPlaying(playing);
     
     // Save user preference
-    localStorage.setItem('mysteryverse-music-enabled', playing.toString());
+    const userId = getCurrentUserId();
+    const musicKey = userId ? `mysteryverse-music-enabled-${userId}` : 'mysteryverse-music-enabled';
+    localStorage.setItem(musicKey, playing.toString());
     
     if (playing) {
       setBackgroundMusicVolume(volume);
@@ -94,7 +114,9 @@ function MusicControl() {
     setBackgroundMusicVolume(newVolume);
     
     // Save volume preference
-    localStorage.setItem('mysteryverse-music-volume', newVolume.toString());
+    const userId = getCurrentUserId();
+    const volumeKey = userId ? `mysteryverse-music-volume-${userId}` : 'mysteryverse-music-volume';
+    localStorage.setItem(volumeKey, newVolume.toString());
   };
 
   return (

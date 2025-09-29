@@ -17,11 +17,14 @@ function Puzzle() {
   const [currentPuzzleAnswer, setCurrentPuzzleAnswer] = useState(null);
   const [showCongratulations, setShowCongratulations] = useState(false);
   const [congratsData, setCongratsData] = useState({ isGameComplete: false });
+  const [leaderboard, setLeaderboard] = useState([]);
+  const [loadingLeaderboard, setLoadingLeaderboard] = useState(true);
   const punchAudioRef = useRef(null);
   const fishingAudioRef = useRef(null);
 
   useEffect(() => {
     fetchVerse();
+    fetchLeaderboard();
   }, [id]);
 
   // Cleanup audio when component unmounts or verse changes
@@ -86,6 +89,19 @@ function Puzzle() {
     }
   };
 
+  const fetchLeaderboard = async () => {
+    try {
+      setLoadingLeaderboard(true);
+      const response = await api.get(`/api/game/verse/${id}/leaderboard`);
+      setLeaderboard(response.data.leaderboard || []);
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error);
+      setLeaderboard([]);
+    } finally {
+      setLoadingLeaderboard(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!answer.trim()) return;
@@ -109,6 +125,9 @@ function Puzzle() {
         localStorage.setItem(`verse-${verse.orderIndex}-answer`, answer.trim());
 
         setAnswer('');
+
+        // Refresh leaderboard after successful submission
+        fetchLeaderboard();
 
         if (!alreadySolved) {
           // Mark that progress was updated for dashboard refresh
@@ -555,6 +574,54 @@ function Puzzle() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* Leaderboard */}
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-4">🏆 Top Solvers</h3>
+              {loadingLeaderboard ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-mystery-gold mx-auto"></div>
+                  <p className="text-gray-400 text-sm mt-2">Loading...</p>
+                </div>
+              ) : leaderboard.length > 0 ? (
+                <div className="space-y-3">
+                  {leaderboard.map((entry, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        entry.rank === 1
+                          ? 'bg-yellow-500/10 border-yellow-500/30'
+                          : entry.rank === 2
+                          ? 'bg-gray-400/10 border-gray-400/30'
+                          : 'bg-amber-600/10 border-amber-600/30'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className="text-xl">{entry.emoji}</span>
+                        <div>
+                          <p className="font-medium text-white">{entry.username}</p>
+                          <p className="text-xs text-gray-400">{entry.title}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-400">
+                          {new Date(entry.solvedAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(entry.solvedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="text-4xl mb-2">🏆</div>
+                  <p className="text-gray-400 text-sm">No one has solved this verse yet!</p>
+                  <p className="text-gray-500 text-xs mt-1">Be the first to claim Gold! 🥇</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

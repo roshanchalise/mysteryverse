@@ -1,13 +1,30 @@
 // Import pen clicking sound MP3
 import clickSoundFile from '../assets/pen-clicking.mp3';
 
+// Helper function to get current user ID from token
+const getCurrentUserId = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    // JWT tokens have 3 parts separated by dots
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.userId;
+  } catch (error) {
+    return null;
+  }
+};
+
 // Audio utility for click sounds
 export const playClickSound = () => {
   // Always trigger background music start regardless of click sound setting
   triggerBackgroundMusicStart();
-  
+
   // Check if clicks sound is enabled
-  const clicksEnabled = localStorage.getItem('mysteryverse-clicks-enabled') !== 'false';
+  const userId = getCurrentUserId();
+  const clicksKey = userId ? `mysteryverse-clicks-enabled-${userId}` : 'mysteryverse-clicks-enabled';
+  const clicksEnabled = localStorage.getItem(clicksKey) !== 'false';
   if (!clicksEnabled) return;
 
   // Play the MP3 click sound
@@ -34,7 +51,9 @@ const triggerBackgroundMusicStart = () => {
   
   // Import background music functions dynamically to avoid circular dependencies
   import('./backgroundMusic.js').then(async ({ startBackgroundMusic, isBackgroundMusicPlaying, setBackgroundMusicVolume }) => {
-    const musicPreference = localStorage.getItem('mysteryverse-music-enabled');
+    const userId = getCurrentUserId();
+    const musicKey = userId ? `mysteryverse-music-enabled-${userId}` : 'mysteryverse-music-enabled';
+    const musicPreference = localStorage.getItem(musicKey);
     
     // Start music if not playing and user hasn't disabled it
     if (!isBackgroundMusicPlaying() && musicPreference !== 'false') {
@@ -42,10 +61,10 @@ const triggerBackgroundMusicStart = () => {
       if (started) {
         // Always set volume to 0.1 (10%)
         setBackgroundMusicVolume(0.1);
-        localStorage.setItem('mysteryverse-music-enabled', 'true');
+        localStorage.setItem(musicKey, 'true');
       }
       if (musicPreference === null) {
-        localStorage.setItem('mysteryverse-music-enabled', 'true');
+        localStorage.setItem(musicKey, 'true');
       }
     }
   }).catch(() => {
@@ -57,9 +76,11 @@ const triggerBackgroundMusicStart = () => {
 export const playButtonSound = () => {
   // Always trigger background music start regardless of click sound setting
   triggerBackgroundMusicStart();
-  
+
   // Check if clicks sound is enabled
-  const clicksEnabled = localStorage.getItem('mysteryverse-clicks-enabled') !== 'false';
+  const userId = getCurrentUserId();
+  const clicksKey = userId ? `mysteryverse-clicks-enabled-${userId}` : 'mysteryverse-clicks-enabled';
+  const clicksEnabled = localStorage.getItem(clicksKey) !== 'false';
   if (!clicksEnabled) return;
 
   // Play the same MP3 click sound
