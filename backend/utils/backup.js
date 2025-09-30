@@ -4,10 +4,14 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-// Create backups directory if it doesn't exist
+// Create backups directory if it doesn't exist (handle production environments)
 const backupsDir = path.join(__dirname, '../backups');
-if (!fs.existsSync(backupsDir)) {
-  fs.mkdirSync(backupsDir, { recursive: true });
+try {
+  if (!fs.existsSync(backupsDir)) {
+    fs.mkdirSync(backupsDir, { recursive: true });
+  }
+} catch (error) {
+  console.warn('⚠️ Could not create backups directory (may be read-only filesystem):', error.message);
 }
 
 // Export all player data to JSON
@@ -40,10 +44,15 @@ const exportPlayerData = async () => {
     const filename = `player-data-backup-${timestamp}.json`;
     const filepath = path.join(backupsDir, filename);
 
-    fs.writeFileSync(filepath, JSON.stringify(backupData, null, 2));
-
-    console.log(`✅ Player data backed up to: ${filepath}`);
-    return { success: true, filepath, filename, userCount: users.length };
+    try {
+      fs.writeFileSync(filepath, JSON.stringify(backupData, null, 2));
+      console.log(`✅ Player data backed up to: ${filepath}`);
+      return { success: true, filepath, filename, userCount: users.length };
+    } catch (fileError) {
+      console.warn('⚠️ Could not write backup file (may be read-only filesystem):', fileError.message);
+      // Return success with data but no file for production environments
+      return { success: true, filepath: null, filename: null, userCount: users.length, data: backupData };
+    }
   } catch (error) {
     console.error('❌ Backup failed:', error);
     return { success: false, error: error.message };

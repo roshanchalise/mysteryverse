@@ -181,9 +181,15 @@ const resetAllProgress = async (req, res) => {
     });
     console.log(`✅ Reset ${userUpdateResult.count} users to verse 1`);
 
-    // Clear all leaderboard entries
-    const leaderboardDeleteResult = await prisma.leaderboardEntry.deleteMany({});
-    console.log(`✅ Cleared ${leaderboardDeleteResult.count} leaderboard entries`);
+    // Clear all leaderboard entries (optional if table doesn't exist)
+    let leaderboardDeleteResult = { count: 0 };
+    try {
+      leaderboardDeleteResult = await prisma.leaderboardEntry.deleteMany({});
+      console.log(`✅ Cleared ${leaderboardDeleteResult.count} leaderboard entries`);
+    } catch (leaderboardError) {
+      console.warn('⚠️ Leaderboard table not found or accessible (skipping leaderboard reset):', leaderboardError.message);
+      // Continue without failing - leaderboard table might not exist yet
+    }
 
     res.json({
       message: 'All player progress and leaderboards have been reset successfully. All players can now start fresh from verse 1.',

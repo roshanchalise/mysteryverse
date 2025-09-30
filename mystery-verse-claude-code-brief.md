@@ -69,3 +69,23 @@ mystery-verse/
 4. Frontend routing and components
 5. Admin panel functionality
 6. Seed data with example puzzles
+
+
+
+# ⭐ Feature Brief: Verse Playerboards
+
+## 1. Project Overview
+
+This document outlines the requirements and implementation plan for adding a "Playerboard" (leaderboard) to each verse page in the Mystery Verse application. This feature is designed to increase player engagement by introducing a competitive element, rewarding the first three players who solve a specific verse.
+
+---
+
+## 2. Feature Description
+
+For each verse, a publicly visible leaderboard will display the top 3 players(username) who solved that verse's puzzle first. The ranks will be designated as Gold, Silver, and Bronze.
+
+*   **Rank 1 (Gold 🥇):** The first player to solve the verse.
+*   **Rank 2 (Silver 🥈):** The second player to solve the verse.
+*   **Rank 3 (Bronze 🥉):** The third player to solve the verse.
+
+The leaderboard will be displayed prominently on the verse's puzzle page

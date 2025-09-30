@@ -122,48 +122,4 @@ const getProfile = async (req, res) => {
   }
 };
 
-const updateProfile = async (req, res) => {
-  try {
-    const { username } = req.body;
-    const userId = req.user.userId;
-
-    if (!username) {
-      return res.status(400).json({ error: 'Username is required' });
-    }
-
-    // Check if username already exists for another user
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        AND: [
-          { NOT: { id: userId } },
-          { username }
-        ]
-      }
-    });
-
-    if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
-    }
-
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: { username },
-      select: {
-        id: true,
-        username: true,
-        currentVerse: true,
-        createdAt: true
-      }
-    });
-
-    res.json({
-      message: 'Profile updated successfully',
-      user: updatedUser
-    });
-  } catch (error) {
-    console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-module.exports = { register, login, getProfile, updateProfile };
+module.exports = { register, login, getProfile };

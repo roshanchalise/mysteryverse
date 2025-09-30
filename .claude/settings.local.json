@@ -11,7 +11,15 @@
       "Bash(npx prisma generate:*)",
       "Bash(npx prisma:*)",
       "Bash(node:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(lsof:*)",
+      "Bash(cat:*)",
+      "Bash(npm run start:*)",
+      "Bash(curl:*)",
+      "Bash(cd:*)",
+      "Bash(npm run:*)",
+      "Bash(ps:*)",
+      "Bash(kill:*)"
     ],
     "deny": [],
     "ask": []
