@@ -159,8 +159,11 @@ const deleteUser = async (req, res) => {
 };
 
 const resetAllProgress = async (req, res) => {
+  console.log('🔄 Starting admin reset operation...');
+
   try {
     // Try to create backup before reset (non-blocking for production)
+    console.log('📦 Attempting to create backup...');
     try {
       await createEventBackup('admin_full_reset', {
         resetBy: 'admin',
@@ -173,6 +176,7 @@ const resetAllProgress = async (req, res) => {
     }
 
     // Reset all users' currentVerse to 1 and clear completedVerses
+    console.log('👥 Resetting user progress...');
     const userUpdateResult = await prisma.user.updateMany({
       data: {
         currentVerse: 1,
@@ -182,15 +186,22 @@ const resetAllProgress = async (req, res) => {
     console.log(`✅ Reset ${userUpdateResult.count} users to verse 1`);
 
     // Clear all leaderboard entries (optional if table doesn't exist)
+    console.log('🏆 Attempting to clear leaderboard entries...');
     let leaderboardDeleteResult = { count: 0 };
     try {
       leaderboardDeleteResult = await prisma.leaderboardEntry.deleteMany({});
       console.log(`✅ Cleared ${leaderboardDeleteResult.count} leaderboard entries`);
     } catch (leaderboardError) {
       console.warn('⚠️ Leaderboard table not found or accessible (skipping leaderboard reset):', leaderboardError.message);
+      console.warn('Leaderboard error details:', {
+        code: leaderboardError.code,
+        message: leaderboardError.message,
+        meta: leaderboardError.meta
+      });
       // Continue without failing - leaderboard table might not exist yet
     }
 
+    console.log('🎉 Admin reset completed successfully');
     res.json({
       message: 'All player progress and leaderboards have been reset successfully. All players can now start fresh from verse 1.',
       details: {
@@ -199,17 +210,26 @@ const resetAllProgress = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Reset all progress error:', error);
+    console.error('❌ Reset all progress error:', error);
+    console.error('Error details:', {
+      code: error.code,
+      message: error.message,
+      meta: error.meta,
+      stack: error.stack
+    });
 
     // Provide more specific error information
     if (error.code === 'P2002') {
       res.status(500).json({ error: 'Database constraint error during reset operation' });
     } else if (error.code === 'P2025') {
       res.status(500).json({ error: 'Required data not found during reset operation' });
+    } else if (error.code === 'P2021') {
+      res.status(500).json({ error: 'Database table does not exist' });
     } else {
       res.status(500).json({
         error: 'Internal server error during reset operation',
-        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        code: error.code,
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Reset operation failed'
       });
     }
   }

@@ -31,6 +31,19 @@ router.post('/reset-all-progress', authenticateAdmin, resetAllProgress);
 // Database health check
 router.get('/database-health', authenticateAdmin, getDatabaseHealth);
 
+// Production debug endpoint
+router.get('/debug', authenticateAdmin, (req, res) => {
+  res.json({
+    environment: process.env.NODE_ENV,
+    platform: process.platform,
+    nodeVersion: process.version,
+    timestamp: new Date().toISOString(),
+    databaseUrl: process.env.DATABASE_URL ? 'Set' : 'Not set',
+    adminPassword: process.env.ADMIN_PASSWORD ? 'Set' : 'Not set',
+    backupsDisabled: process.env.DISABLE_BACKUPS === 'true'
+  });
+});
+
 // Backup routes
 router.post('/backup/create', authenticateAdmin, createBackup);
 router.get('/backup/list', authenticateAdmin, getBackups);

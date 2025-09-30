@@ -17,6 +17,9 @@ backend/dist/
 # Database
 backend/prisma/dev.db*
 
+# Backups
+backend/backups/*.json
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
