@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const { createEventBackup } = require('../utils/scheduler');
+const { checkDatabaseHealth } = require('../utils/databaseCheck');
 
 const prisma = new PrismaClient();
 
@@ -159,32 +160,67 @@ const deleteUser = async (req, res) => {
 
 const resetAllProgress = async (req, res) => {
   try {
-    // Create backup before reset
-    await createEventBackup('admin_full_reset', {
-      resetBy: 'admin',
-      timestamp: new Date().toISOString()
-    }).catch(err => {
-      console.error('Failed to create pre-reset backup:', err);
-    });
+    // Try to create backup before reset (non-blocking for production)
+    try {
+      await createEventBackup('admin_full_reset', {
+        resetBy: 'admin',
+        timestamp: new Date().toISOString()
+      });
+      console.log('✅ Pre-reset backup created successfully');
+    } catch (backupError) {
+      console.warn('⚠️ Backup creation failed (continuing with reset):', backupError.message);
+      // Don't block the reset operation if backup fails
+    }
 
     // Reset all users' currentVerse to 1 and clear completedVerses
-    await prisma.user.updateMany({
+    const userUpdateResult = await prisma.user.updateMany({
       data: {
         currentVerse: 1,
         completedVerses: "[]"
       }
     });
+    console.log(`✅ Reset ${userUpdateResult.count} users to verse 1`);
 
     // Clear all leaderboard entries
-    await prisma.leaderboardEntry.deleteMany({});
+    const leaderboardDeleteResult = await prisma.leaderboardEntry.deleteMany({});
+    console.log(`✅ Cleared ${leaderboardDeleteResult.count} leaderboard entries`);
 
     res.json({
-      message: 'All player progress and leaderboards have been reset successfully. All players can now start fresh from verse 1.'
+      message: 'All player progress and leaderboards have been reset successfully. All players can now start fresh from verse 1.',
+      details: {
+        usersReset: userUpdateResult.count,
+        leaderboardEntriesCleared: leaderboardDeleteResult.count
+      }
     });
   } catch (error) {
     console.error('Reset all progress error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+
+    // Provide more specific error information
+    if (error.code === 'P2002') {
+      res.status(500).json({ error: 'Database constraint error during reset operation' });
+    } else if (error.code === 'P2025') {
+      res.status(500).json({ error: 'Required data not found during reset operation' });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error during reset operation',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
   }
 };
 
-module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser, resetAllProgress };
+const getDatabaseHealth = async (req, res) => {
+  try {
+    const healthStatus = await checkDatabaseHealth();
+    res.json(healthStatus);
+  } catch (error) {
+    console.error('Database health check error:', error);
+    res.status(500).json({
+      status: 'error',
+      error: 'Failed to check database health',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+module.exports = { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser, resetAllProgress, getDatabaseHealth };

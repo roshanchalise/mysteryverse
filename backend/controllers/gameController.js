@@ -199,14 +199,15 @@ const submitAnswer = async (req, res) => {
       if (!wasAlreadySolved) {
         completedVerses.push(verse.orderIndex);
 
-        // Check current leaderboard for this verse
-        const currentLeaderboard = await prisma.leaderboardEntry.findMany({
-          where: { verseId: verseId },
-          orderBy: { rank: 'asc' }
-        });
+        // Try to update leaderboard (non-blocking if table doesn't exist in production)
+        try {
+          // Check current leaderboard for this verse to determine rank
+          const currentLeaderboard = await prisma.leaderboardEntry.findMany({
+            where: { verseId: verseId },
+            orderBy: { solvedAt: 'asc' }
+          });
 
-        // Add to leaderboard if there's space (top 3 only)
-        if (currentLeaderboard.length < 3) {
+          // Add ALL solvers to leaderboard (not just top 3)
           const nextRank = currentLeaderboard.length + 1;
           await prisma.leaderboardEntry.create({
             data: {
@@ -216,6 +217,15 @@ const submitAnswer = async (req, res) => {
               solvedAt: new Date()
             }
           });
+          console.log(`✅ Added user to leaderboard at rank ${nextRank} for verse ${verseId}`);
+        } catch (leaderboardError) {
+          console.warn('⚠️ Failed to update leaderboard (continuing with answer submission):', leaderboardError.message);
+
+          // Check if it's a schema/table issue
+          if (leaderboardError.code === 'P2021' || leaderboardError.message.includes('does not exist')) {
+            console.error('🚨 LeaderboardEntry table may not exist in production - answer submission will continue without leaderboard');
+          }
+          // Don't block the answer submission if leaderboard fails
         }
 
         // Update database with new completion
@@ -405,22 +415,62 @@ const getVerseLeaderboard = async (req, res) => {
       return res.status(404).json({ error: 'Verse not found' });
     }
 
-    // Get top 3 leaderboard entries for this verse
-    const leaderboard = await prisma.leaderboardEntry.findMany({
-      where: { verseId: verseId },
-      include: {
-        user: {
-          select: {
-            username: true
+    let topThree = [];
+    let userRank = null;
+
+    try {
+      // Get top 3 leaderboard entries for this verse
+      topThree = await prisma.leaderboardEntry.findMany({
+        where: { verseId: verseId },
+        include: {
+          user: {
+            select: {
+              username: true
+            }
+          }
+        },
+        orderBy: { rank: 'asc' },
+        take: 3
+      });
+
+      // Get current user's rank (if they solved this verse)
+      const currentUserId = req.user.userId;
+      userRank = await prisma.leaderboardEntry.findUnique({
+        where: {
+          userId_verseId: {
+            userId: currentUserId,
+            verseId: verseId
+          }
+        },
+        include: {
+          user: {
+            select: {
+              username: true
+            }
           }
         }
-      },
-      orderBy: { rank: 'asc' },
-      take: 3
-    });
+      });
+    } catch (leaderboardError) {
+      console.warn('⚠️ Leaderboard data access failed:', leaderboardError.message);
 
-    // Format the response with rank emojis
-    const formattedLeaderboard = leaderboard.map(entry => ({
+      // Check if it's a table/schema issue
+      if (leaderboardError.code === 'P2021' || leaderboardError.message.includes('does not exist')) {
+        console.error('🚨 LeaderboardEntry table may not exist in production database');
+        return res.json({
+          verseId: verseId,
+          verseTitle: verse.title,
+          topThree: [],
+          userRank: null,
+          warning: 'Leaderboard feature temporarily unavailable'
+        });
+      }
+
+      // Re-throw other errors
+      throw leaderboardError;
+    }
+
+    // Format the top 3 response with rank emojis
+    const formattedTopThree = topThree.map(entry => ({
       rank: entry.rank,
       username: entry.user.username,
       solvedAt: entry.solvedAt,
@@ -428,15 +478,35 @@ const getVerseLeaderboard = async (req, res) => {
       title: entry.rank === 1 ? 'Gold' : entry.rank === 2 ? 'Silver' : 'Bronze'
     }));
 
+    // Format user's personal rank (if exists)
+    const formattedUserRank = userRank ? {
+      rank: userRank.rank,
+      username: userRank.user.username,
+      solvedAt: userRank.solvedAt
+    } : null;
+
     res.json({
       verseId: verseId,
       verseTitle: verse.title,
-      leaderboard: formattedLeaderboard
+      topThree: formattedTopThree,
+      userRank: formattedUserRank
     });
 
   } catch (error) {
     console.error('Get verse leaderboard error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+
+    // Provide specific error messages for different scenarios
+    if (error.code === 'P2021') {
+      res.status(500).json({
+        error: 'Database schema error - leaderboard table may not exist',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    } else {
+      res.status(500).json({
+        error: 'Internal server error accessing leaderboard data',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
   }
 };
 

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser, resetAllProgress } = require('../controllers/adminController');
+const { getAllVerses, createVerse, updateVerse, deleteVerse, getAllUsers, deleteUser, resetAllProgress, getDatabaseHealth } = require('../controllers/adminController');
 const { createBackup, getBackups, downloadBackup, restoreBackup, cleanupBackups, getBackupStats } = require('../controllers/backupController');
 const { authenticateAdmin } = require('../middleware/auth');
 
@@ -27,6 +27,9 @@ router.delete('/users/:id', authenticateAdmin, deleteUser);
 
 // Reset functionality
 router.post('/reset-all-progress', authenticateAdmin, resetAllProgress);
+
+// Database health check
+router.get('/database-health', authenticateAdmin, getDatabaseHealth);
 
 // Backup routes
 router.post('/backup/create', authenticateAdmin, createBackup);
