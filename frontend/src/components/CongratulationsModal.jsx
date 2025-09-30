@@ -60,7 +60,7 @@ const CongratulationsModal = ({
           )}
 
           <div className="text-sm text-gray-400 mb-4">
-            Click below to return to the dashboard and continue your journey!
+            Click below to continue viewing the solved verse!
           </div>
         </div>
 
@@ -73,7 +73,7 @@ const CongratulationsModal = ({
             }}
             className="text-mystery-gold hover:text-yellow-400 transition-colors text-sm font-medium"
           >
-            Continue to Dashboard →
+            Continue
           </button>
         </div>
       </div>

@@ -217,9 +217,7 @@ function Dashboard() {
                   Congratulations, Puzzle Master!
                 </p>
                 <p className="text-gray-300 text-sm">
-                  You have successfully completed all verses of the Mystery Verse!<br/>
-                  Your wit, persistence, and skill have unlocked every secret.<br/>
-                  You are truly a master of puzzles and riddles!
+                  You have successfully completed all verses of the Mystery Verse. Your wit, persistence, and skill have unlocked every secret. You are truly a master of puzzles and riddles. Be sure to stay connected—many more mysteries await in the future!
                 </p>
               </div>
             ) : (

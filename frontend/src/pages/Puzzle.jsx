@@ -127,7 +127,8 @@ function Puzzle() {
         // Store the correct answer for review purposes
         localStorage.setItem(`verse-${verse.orderIndex}-answer`, answer.trim());
 
-        setAnswer('');
+        // Update verse state to show as solved
+        setVerse(prev => ({ ...prev, isSolved: true }));
 
         // Refresh leaderboard after successful submission
         fetchLeaderboard();
@@ -160,7 +161,6 @@ function Puzzle() {
   // Handle congratulations modal close
   const handleCongratulationsClose = () => {
     setShowCongratulations(false);
-    navigate('/dashboard', { state: { refreshProgress: true } });
   };
 
   // Check puzzle types
@@ -621,33 +621,22 @@ function Puzzle() {
 
                   {/* User's Personal Rank (if not already in top 3) */}
                   {userRank && userRank.rank > 3 && (
-                    <>
-                      {/* Separator */}
-                      <div className="flex items-center my-4">
-                        <div className="flex-1 border-t border-gray-600"></div>
-                        <div className="px-3 text-xs text-gray-500">Your Rank</div>
-                        <div className="flex-1 border-t border-gray-600"></div>
-                      </div>
-
-                      {/* User's Rank Display */}
-                      <div className="flex items-center justify-between p-3 rounded-lg border bg-blue-500/10 border-blue-500/30">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-xl inline-block w-6 h-6 text-center leading-6">⭐</span>
-                          <div>
-                            <p className="font-medium text-white">{userRank.username}</p>
-                            <p className="text-xs text-gray-400">Rank {userRank.rank}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-gray-400">
-                            {new Date(userRank.solvedAt).toLocaleDateString()}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {new Date(userRank.solvedAt).toLocaleTimeString()}
-                          </p>
+                    <div className="flex items-center justify-between p-3 rounded-lg border bg-blue-500/10 border-blue-500/30">
+                      <div className="flex items-center space-x-3">
+                        <span className="text-xl inline-block w-6 h-6 text-center leading-6">⭐</span>
+                        <div>
+                          <p className="font-medium text-white">{userRank.username}</p>
                         </div>
                       </div>
-                    </>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-400">
+                          {new Date(userRank.solvedAt).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(userRank.solvedAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
               ) : (
