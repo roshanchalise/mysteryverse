@@ -44,7 +44,7 @@ function VerseCard({ verse }) {
             }`}
             onClick={() => {}}
           >
-            {isSolved ? 'Review' : 'Enter Verse'}
+            {isSolved ? 'Review Verse' : 'Enter Verse'}
           </Link>
         ) : (
           <button className="btn-secondary flex-1 cursor-not-allowed opacity-50" disabled>
