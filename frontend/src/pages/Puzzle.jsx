@@ -345,7 +345,7 @@ function Puzzle() {
                         disabled={submitting || !answer.trim()}
                         className="w-full btn btn-primary"
                       >
-                        {submitting ? 'Checking...' : 'Submit Answer'}
+                        {submitting ? 'Unveiling...' : 'Discover Mystery'}
                       </button>
                     )}
 
@@ -441,7 +441,7 @@ function Puzzle() {
                         disabled={submitting || !answer.trim()}
                         className="w-full btn btn-primary"
                       >
-                        {submitting ? 'Checking...' : 'Submit Answer'}
+                        {submitting ? 'Unveiling...' : 'Discover Mystery'}
                       </button>
                     )}
 
@@ -537,7 +537,7 @@ function Puzzle() {
                         disabled={submitting || !answer.trim()}
                         className="w-full btn btn-primary"
                       >
-                        {submitting ? 'Checking...' : 'Submit Answer'}
+                        {submitting ? 'Unveiling...' : 'Discover Mystery'}
                       </button>
                     )}
 
