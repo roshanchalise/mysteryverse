@@ -293,7 +293,7 @@ function Puzzle() {
                       <label className="block text-sm font-medium mb-2">
                         Your Answer
                       </label>
-                      <div className="flex justify-center gap-0.5 sm:gap-2 mb-4 -mx-2 sm:mx-0">
+                      <div className="flex justify-center gap-1 sm:gap-2 mb-4 -mx-2 sm:mx-0">
                         {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((index) => (
                           <input
                             key={index}
@@ -319,7 +319,7 @@ function Puzzle() {
                                 if (prevInput) prevInput.focus();
                               }
                             }}
-                            className="w-6 h-6 sm:w-12 sm:h-12 text-center text-sm sm:text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
+                            className="w-8 h-8 sm:w-12 sm:h-12 text-center text-base sm:text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
                             disabled={submitting || verse.isSolved}
                           />
                         ))}
