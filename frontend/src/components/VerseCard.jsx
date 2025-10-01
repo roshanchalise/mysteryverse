@@ -40,7 +40,7 @@ function VerseCard({ verse }) {
             className="btn-primary flex-1 text-center"
             onClick={() => {}}
           >
-            {isSolved ? 'Review' : 'Solve Puzzle'}
+            {isSolved ? 'Review' : 'Enter Verse'}
           </Link>
         ) : (
           <button className="btn-secondary flex-1 cursor-not-allowed opacity-50" disabled>
