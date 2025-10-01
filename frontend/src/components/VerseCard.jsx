@@ -35,9 +35,13 @@ function VerseCard({ verse }) {
 
       <div className="flex justify-between items-center">
         {isUnlocked ? (
-          <Link 
+          <Link
             to={`/verse/${id}`}
-            className="btn-primary flex-1 text-center"
+            className={`flex-1 text-center ${
+              isSolved
+                ? 'btn-primary'
+                : 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105'
+            }`}
             onClick={() => {}}
           >
             {isSolved ? 'Review' : 'Enter Verse'}
