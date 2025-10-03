@@ -39,12 +39,12 @@ function VerseCard({ verse }) {
             to={`/verse/${id}`}
             className={`flex-1 text-center ${
               isSolved
-                ? 'btn-primary'
+                ? 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105'
                 : 'bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105'
             }`}
             onClick={() => {}}
           >
-            {isSolved ? 'Review Verse' : 'Enter Verse'}
+            Enter Verse
           </Link>
         ) : (
           <button className="btn-secondary flex-1 cursor-not-allowed opacity-50" disabled>
