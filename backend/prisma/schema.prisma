@@ -8,46 +8,39 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @default(autoincrement())
-  username        String   @unique
-  password        String
-  currentVerse    Int      @default(1)
-  completedVerses String   @default("[]")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  // Relation to leaderboard entries
+  id                 Int                @id @default(autoincrement())
+  username           String             @unique
+  password           String
+  currentVerse       Int                @default(1)
+  completedVerses    String             @default("[]")
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   leaderboardEntries LeaderboardEntry[]
 }
 
 model Verse {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  clues       String?
-  answer      String
-  orderIndex  Int      @unique
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relation to leaderboard entries
+  id                 Int                @id @default(autoincrement())
+  title              String
+  description        String
+  clues              String?
+  answer             String
+  orderIndex         Int                @unique
+  isActive           Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   leaderboardEntries LeaderboardEntry[]
 }
 
 model LeaderboardEntry {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  verseId     Int
-  rank        Int      // 1 = Gold, 2 = Silver, 3 = Bronze
-  solvedAt    DateTime @default(now())
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  verseId   Int
+  rank      Int
+  solvedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse     Verse    @relation(fields: [verseId], references: [id], onDelete: Cascade)
 
-  // Relations
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  verse       Verse    @relation(fields: [verseId], references: [id], onDelete: Cascade)
-
-  // Ensure one entry per user per verse, and only 3 entries per verse
   @@unique([userId, verseId])
   @@index([verseId, rank])
 }

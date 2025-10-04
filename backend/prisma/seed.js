@@ -28,6 +28,13 @@ async function main() {
         description: "The Titan Prometheus gifted fire to humanity, a flame of knowledge and warmth that forever changed our destiny. But every flame casts a shadow, every gift carries a weight. Some burdens, like the Titan's own, feel too heavy to carry alone. They fester in silence, growing heavier in the dark. Your challenge is to decipher the wisdom hidden in this ancient tale. Look at the symbols—one of an immense weight, the other of division and connection. What single word unlocks the secret to easing such a burden?",
         clues: "Visual clues guide your understanding: [Clue 1] An image of the Titan Atlas, straining as he holds the celestial spheres (the world) on his shoulders - representing an immense emotional burden or stress one person is carrying alone. [Clue 2] A simple diagram of two overlapping circles (a Venn diagram), with the intersecting area highlighted - visually representing the act of creating an overlapping, common space where something that was once separate is now held jointly.",
         answer: "SHARE"
+      },
+      {
+        orderIndex: 4,
+        title: "The Unspoken Thought",
+        description: "Alex felt a fog separating him from his friends. His thoughts were clear in his mind, but when he spoke, they crumbled, creating walls of misunderstanding. He watched them connect, while he felt stranded on an island of silence. Frustrated, he realized he wasn't missing feelings, but the proper tools to build bridges for them. He discovered that the right one, chosen with care, could cut through the fog, rebuild a connection, and turn a jumbled thought into a shared moment, finally unlocking the door to his friends' minds.",
+        clues: "Visual clues guide you: [Clue 1] An image of colorful scattered letters and numbers on a board - representing the chaos of unorganized thoughts and the building blocks of communication. [Clue 2] An image of a man reading through a paper holding a pen in his hand - representing the act of carefully choosing and crafting communication.",
+        answer: "WORD"
       }
     ]
   });

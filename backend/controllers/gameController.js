@@ -247,15 +247,13 @@ const submitAnswer = async (req, res) => {
       if (wasAlreadySolved) {
         successMessage = 'You have already solved this verse!';
       } else if (verse.orderIndex === 1) {
-        if (isGameComplete) {
-          successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!' 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉";
-        } else {
-          successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'";
-        }
+        successMessage = "A wave of understanding washes over Arthur. 'Of course!' he exclaims, leaping to his feet, a wide grin spreading across his face. 'It was right here all along! The key to laughter isn't a single word or action, but the perfect delivery, the unexpected twist... the PUNCHLINE!'";
       } else if (verse.orderIndex === 2) {
-        successMessage = isGameComplete ? "That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade! 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉" : "That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade!";
+        successMessage = "That's it! STREAM! You've helped Leo bridge the gap between old and new. He and Zara are now happily watching 'Cyber Voyager' in glorious HD. Adapting to change can be an upgrade!";
       } else if (verse.orderIndex === 3) {
-        successMessage = isGameComplete ? "The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated. 🎉 CONGRATULATIONS! You have completed ALL VERSES of the Mystery Verse! You are a true puzzle master! 🎉" : "The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated.";
+        successMessage = "The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated.";
+      } else if (verse.orderIndex === 4) {
+        successMessage = "The fog lifts! You've found it—WORD! Alex realizes that the right word, chosen with care, is the bridge that connects minds and hearts. The door to understanding swings open!";
       } else {
         successMessage = isGameComplete ? 'Congratulations! You have completed all verses!' : 'Correct! Next verse unlocked!';
       }
@@ -275,6 +273,8 @@ const submitAnswer = async (req, res) => {
         incorrectMessage = "Leo scratches his head. 'That doesn't seem right. There must be a way to bridge this gap between old and new...'";
       } else if (verse.orderIndex === 3) {
         incorrectMessage = "The weight is great, but it need not be yours alone. Look again at the symbols. How can two separate circles hold something in common? How is a burden lessened?";
+      } else if (verse.orderIndex === 4) {
+        incorrectMessage = "Alex shakes his head, the fog still thick around him. 'That's not quite it. This is not the tool I am looking for.'";
       } else {
         incorrectMessage = 'Incorrect answer. Try again!';
       }

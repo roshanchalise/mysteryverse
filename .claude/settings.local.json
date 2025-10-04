@@ -20,7 +20,9 @@
       "Bash(npm run:*)",
       "Bash(ps:*)",
       "Bash(kill:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(md5:*)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []
