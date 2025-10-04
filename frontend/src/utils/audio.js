@@ -1,5 +1,9 @@
 // Import pen clicking sound MP3
 import clickSoundFile from '../assets/pen-clicking.mp3';
+// Import right answer sound MP3
+import rightAnswerSoundFile from '../assets/right-answer.mp3';
+// Import wrong answer sound MP3
+import wrongAnswerSoundFile from '../assets/wrong-answer.mp3';
 
 // Helper function to get current user ID from token
 const getCurrentUserId = () => {
@@ -90,9 +94,53 @@ export const playButtonSound = () => {
     audio.play().catch(() => {
       // Silently fail if audio can't play (e.g., browser restrictions)
     });
-    
+
   } catch (error) {
     // Fallback: visual feedback in console if audio fails
     console.log('Button click!');
+  }
+};
+
+// Play right answer sound
+export const playCorrectAnswerSound = () => {
+  // Check if clicks sound is enabled
+  const userId = getCurrentUserId();
+  const clicksKey = userId ? `mysteryverse-clicks-enabled-${userId}` : 'mysteryverse-clicks-enabled';
+  const clicksEnabled = localStorage.getItem(clicksKey) !== 'false';
+  if (!clicksEnabled) return;
+
+  // Play the right answer MP3 sound
+  try {
+    const audio = new Audio(rightAnswerSoundFile);
+    audio.volume = 0.3; // Set a slightly higher volume for celebration
+    audio.play().catch(() => {
+      // Silently fail if audio can't play (e.g., browser restrictions)
+    });
+
+  } catch (error) {
+    // Fallback: visual feedback in console if audio fails
+    console.log('Correct answer!');
+  }
+};
+
+// Play wrong answer sound
+export const playWrongAnswerSound = () => {
+  // Check if clicks sound is enabled
+  const userId = getCurrentUserId();
+  const clicksKey = userId ? `mysteryverse-clicks-enabled-${userId}` : 'mysteryverse-clicks-enabled';
+  const clicksEnabled = localStorage.getItem(clicksKey) !== 'false';
+  if (!clicksEnabled) return;
+
+  // Play the wrong answer MP3 sound
+  try {
+    const audio = new Audio(wrongAnswerSoundFile);
+    audio.volume = 0.3; // Set a reasonable volume level
+    audio.play().catch(() => {
+      // Silently fail if audio can't play (e.g., browser restrictions)
+    });
+
+  } catch (error) {
+    // Fallback: visual feedback in console if audio fails
+    console.log('Wrong answer!');
   }
 };
