@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import api from '../config/api';
-import { playClickSound } from '../utils/audio';
+import { playClickSound, playCorrectAnswerSound, playWrongAnswerSound } from '../utils/audio';
 import CongratulationsModal from '../components/CongratulationsModal';
 
 function Puzzle() {
@@ -68,6 +68,9 @@ function Puzzle() {
         } else if (verseData.orderIndex === 3) {
           setFeedback("The flame brightens when divided! You have understood the Titan's wisdom. The answer is SHARE. A burden is halved when another helps to carry it. Your path forward is illuminated.");
           setFeedbackType('success');
+        } else if (verseData.orderIndex === 4) {
+          setFeedback("The fog lifts! You've found it—WORD! Alex realizes that the right word, chosen with care, is the bridge that connects minds and hearts. The door to understanding swings open!");
+          setFeedbackType('success');
         }
       } else {
         // Clear answer field for unsolved verses
@@ -121,6 +124,9 @@ function Puzzle() {
       const { correct, message, gameComplete, alreadySolved } = response.data;
 
       if (correct) {
+        // Play correct answer sound
+        playCorrectAnswerSound();
+
         setFeedbackType('success');
         setFeedback(message);
 
@@ -146,6 +152,9 @@ function Puzzle() {
           setShowCongratulations(true);
         }
       } else {
+        // Play wrong answer sound
+        playWrongAnswerSound();
+
         setFeedbackType('error');
         setFeedback(message);
       }
@@ -167,6 +176,7 @@ function Puzzle() {
   const isHumorHelixPuzzle = verse && verse.orderIndex === 1;
   const isAnalogSunsetPuzzle = verse && verse.orderIndex === 2;
   const isTitanGiftPuzzle = verse && verse.orderIndex === 3;
+  const isUnspokenThoughtPuzzle = verse && verse.orderIndex === 4;
 
   if (loading) {
     return (
@@ -254,7 +264,7 @@ function Puzzle() {
                         }}
                       >
                         <img
-                          src="/images/verse 5/punch image.jpeg"
+                          src="/images/verse 1/punch image.jpeg"
                           alt="Boxing Glove Clue - Click to play/pause sound"
                           className="w-full h-48 object-contain rounded"
                         />
@@ -279,7 +289,7 @@ function Puzzle() {
                         }}
                       >
                         <img
-                          src="/images/verse 5/fishing image.jpeg"
+                          src="/images/verse 1/fishing image.jpeg"
                           alt="Fishing Scene Clue - Click to play/pause sound"
                           className="w-full h-48 object-contain rounded"
                         />
@@ -461,7 +471,7 @@ function Puzzle() {
                         <img
                           src="/images/verse 3/atlas_statue.jpg"
                           alt="Titan Atlas holding the celestial sphere - representing an immense burden carried alone"
-                          className="w-full h-48 object-cover rounded"
+                          className="w-full h-48 object-contain rounded"
                         />
                       </div>
                     </div>
@@ -473,7 +483,7 @@ function Puzzle() {
                         <img
                           src="/images/verse 3/venn_diagram_common_ground.jpg"
                           alt="Venn diagram showing Common Ground - representing shared space and connection"
-                          className="w-full h-48 object-cover rounded"
+                          className="w-full h-48 object-contain rounded"
                         />
                       </div>
                     </div>
@@ -524,6 +534,102 @@ function Puzzle() {
                     {feedback && (
                       <div className={`text-center p-3 rounded-md ${
                         feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('SHARE') || feedback.includes('flame brightens')
+                          ? 'bg-green-900/50 text-green-300'
+                          : 'bg-red-900/50 text-red-300'
+                      }`}>
+                        {feedback}
+                      </div>
+                    )}
+
+                    {!verse.isSolved && (
+                      <button
+                        type="submit"
+                        disabled={submitting || !answer.trim()}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                      >
+                        {submitting ? 'Unveiling...' : 'Discover Mystery'}
+                      </button>
+                    )}
+
+                  </form>
+                </div>
+              )}
+
+              {/* The Unspoken Thought Puzzle */}
+              {isUnspokenThoughtPuzzle && (
+                <div className="space-y-6">
+                  {/* Two Image Sections */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Letters Board Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 1</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 4/letters.jpeg"
+                          alt="Colorful scattered letters and numbers on a board - the building blocks of communication"
+                          className="w-full h-48 object-contain rounded"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Reading Paper Image Section */}
+                    <div className="bg-gray-800 rounded-lg p-4 border border-mystery-gold/20">
+                      <h4 className="text-center text-mystery-gold mb-3 font-semibold">Visual Clue 2</h4>
+                      <div className="cursor-pointer transform transition-transform hover:scale-105">
+                        <img
+                          src="/images/verse 4/reading.jpeg"
+                          alt="Man reading paper with pen in hand - carefully crafting communication"
+                          className="w-full h-48 object-contain rounded"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Answer Form */}
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        Your Answer
+                      </label>
+                      <div className="flex justify-center gap-2 mb-4">
+                        {[0, 1, 2, 3].map((index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            maxLength="1"
+                            value={answer[index] || ''}
+                            onChange={(e) => {
+                              const newAnswer = answer.split('');
+                              newAnswer[index] = e.target.value.toUpperCase();
+                              const updatedAnswer = newAnswer.join('').slice(0, 4);
+                              setAnswer(updatedAnswer);
+
+                              // Auto-focus next input if current is filled
+                              if (e.target.value && index < 3) {
+                                const nextInput = e.target.parentElement.children[index + 1];
+                                if (nextInput) nextInput.focus();
+                              }
+                            }}
+                            onKeyDown={(e) => {
+                              // Handle backspace to go to previous input
+                              if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                const prevInput = e.target.parentElement.children[index - 1];
+                                if (prevInput) prevInput.focus();
+                              }
+                            }}
+                            className="w-12 h-12 text-center text-xl font-bold border-2 border-mystery-gold/30 bg-gray-800 text-mystery-gold rounded focus:border-mystery-gold focus:outline-none transition-colors"
+                            disabled={submitting || verse.isSolved}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-center text-sm text-gray-400 mb-2">
+                        What tool does Alex need to build a bridge from his mind to his friends'?
+                      </p>
+                    </div>
+
+                    {feedback && (
+                      <div className={`text-center p-3 rounded-md ${
+                        feedback.includes('Correct') || feedback.includes('already solved') || feedback.includes('WORD') || feedback.includes('fog lifts')
                           ? 'bg-green-900/50 text-green-300'
                           : 'bg-red-900/50 text-red-300'
                       }`}>
